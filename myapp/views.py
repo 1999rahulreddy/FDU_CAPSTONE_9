@@ -1,9 +1,14 @@
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView
 from django.contrib.auth.forms import UserCreationForm
-#from django.views.decorators.csrf import csrf_exempt
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .serializer import *
+from .models import *
+# from django.views.decorators.csrf import csrf_exempt
 from pathlib import Path
-import os, subprocess
+import os
+import subprocess
 
 '''
 class SignUpView(CreateView):
@@ -14,10 +19,30 @@ class SignUpView(CreateView):
         return render(CreateView, 'signup.html', {})
 '''
 
+
+class UserView(APIView):
+    serializer_class = UserSerializer
+
+    def get(self, request):
+        output = [{"username": output.username, "email": output.email}
+                  for output in User.objects.all()]
+        return Response(output)
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+
+
 def SignUpView(request):
     return render(request, 'Signup.html', {})
+
+
 def home(request):
     return render(request, 'home.html', {})
+
+
 def upload_script(request):
     if request.method == 'POST':
         uploaded_file = request.FILES['file']
@@ -28,11 +53,12 @@ def upload_script(request):
                 f.write(chunk)
 
         # Execute the Python script using subprocess
-        result = subprocess.run(['python', file_path], capture_output=True, text=True)
-        
+        result = subprocess.run(['python', file_path],
+                                capture_output=True, text=True)
+
         # Access the script output using 'result.stdout'
         script_output = result.stdout
 
         return render(request, 'output.html', {'output': script_output})
-    
+
     return render(request, 'upload.html')
