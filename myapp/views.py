@@ -9,6 +9,8 @@ from .models import *
 from pathlib import Path
 import os
 import subprocess
+from django.contrib.auth.decorators import login_required
+from .models import UserFile
 
 '''
 class SignUpView(CreateView):
@@ -62,8 +64,6 @@ def upload_script(request):
         return render(request, 'output.html', {'output': script_output})
 
     return render(request, 'upload.html')
-<<<<<<< HEAD
-=======
 
 @login_required
 def upload_file(request):
@@ -131,4 +131,3 @@ def upload_file(request):
 def list_files(request):
     user_files= UserFile.objects.filter(user=request.user)
     return render(request, 'list.html',{'user_files':user_files})
->>>>>>> fe0a23d (only file no reg/sign)
