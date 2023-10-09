@@ -62,3 +62,73 @@ def upload_script(request):
         return render(request, 'output.html', {'output': script_output})
 
     return render(request, 'upload.html')
+<<<<<<< HEAD
+=======
+
+@login_required
+def upload_file(request):
+    if request.method == 'POST':
+        user = request.user
+        uploaded_file = request.FILES['file']
+        BASE_DIR = Path(__file__).resolve().parent
+        file_name = uploaded_file.name
+        file_location = os.path.join(BASE_DIR, f'uploadedcode/{file_name}')
+        description = request.POST.get('description', '')
+
+        # Check the file extension
+        file_extension = os.path.splitext(file_name)[-1].lower()
+
+        if file_extension == '.py':
+            # Handle Python script execution
+            user_file = UserFile(user=user, file_name=file_name, file_location=file_location, description=description)
+            user_file.save()
+
+            # Save the uploaded file to the specified location
+            with open(file_location, 'wb') as file:
+                for chunk in uploaded_file.chunks():
+                    file.write(chunk)
+
+            # Execute the Python script
+            result = subprocess.run(['python', file_location], capture_output=True, text=True)
+
+            # Access the script output using 'result.stdout'
+            script_output = result.stdout
+
+            return render(request, 'output.html', {'script_output': script_output})
+
+        elif file_extension == '.c':
+            # Handle C code compilation and execution
+            user_file = UserFile(user=user, file_name=file_name, file_location=file_location, description=description)
+            user_file.save()
+
+            # Save the uploaded C file to the specified location
+            with open(file_location, 'wb') as file:
+                for chunk in uploaded_file.chunks():
+                    file.write(chunk)
+
+            # Compile the C code (assuming it's a single .c file)
+            compile_command = ['gcc', file_location, '-o', f'{file_name}_compiled_file']
+            compile_result = subprocess.run(compile_command, capture_ouyestput=True, text=True)
+
+            if compile_result.returncode == 0:
+                # Successfully compiled, execute the compiled binary
+                execute_command = [f'./{file_name}_compiled_file']
+                execution_result = subprocess.run(execute_command, capture_output=True, text=True)
+
+                # Access the execution output using 'execution_result.stdout'
+                script_output = execution_result.stdout
+
+                return render(request, 'output.html', {'script_output': script_output})
+            else:
+                # Compilation failed
+                return render(request, 'upload.html', {'error_message': 'Compilation failed'})
+
+    return render(request, 'upload.html')
+
+
+
+@login_required
+def list_files(request):
+    user_files= UserFile.objects.filter(user=request.user)
+    return render(request, 'list.html',{'user_files':user_files})
+>>>>>>> fe0a23d (only file no reg/sign)
