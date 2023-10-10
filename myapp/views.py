@@ -1,12 +1,16 @@
 from django.shortcuts import render, redirect
+from django import forms
 from django.views.generic.edit import CreateView
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import get_user, login
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializer import *
 from .models import *
+from .forms import RegistrationForm
 # from django.views.decorators.csrf import csrf_exempt
 from pathlib import Path
+from django.contrib.auth.decorators import login_required
 import os
 import subprocess
 
@@ -42,31 +46,9 @@ def SignUpView(request):
 def home(request):
     return render(request, 'home.html', {})
 
-
-def upload_script(request):
-    if request.method == 'POST':
-        uploaded_file = request.FILES['file']
-        BASE_DIR = Path(__file__).resolve().parent
-        file_path = os.path.join(BASE_DIR, 'uploadedcode/a.py')
-        with open(file_path, 'wb+') as f:
-            for chunk in uploaded_file.chunks():
-                f.write(chunk)
-
-        # Execute the Python script using subprocess
-        result = subprocess.run(['python', file_path],
-                                capture_output=True, text=True)
-
-        # Access the script output using 'result.stdout'
-        script_output = result.stdout
-
-        return render(request, 'output.html', {'output': script_output})
-
-    return render(request, 'upload.html')
-<<<<<<< HEAD
-=======
-
 @login_required
 def upload_file(request):
+    user = request.user
     if request.method == 'POST':
         user = request.user
         uploaded_file = request.FILES['file']
@@ -80,7 +62,7 @@ def upload_file(request):
 
         if file_extension == '.py':
             # Handle Python script execution
-            user_file = UserFile(user=user, file_name=file_name, file_location=file_location, description=description)
+            user_file = user_files(user=user, file_name=file_name, file_location=file_location, description=description)
             user_file.save()
 
             # Save the uploaded file to the specified location
@@ -94,11 +76,11 @@ def upload_file(request):
             # Access the script output using 'result.stdout'
             script_output = result.stdout
 
-            return render(request, 'output.html', {'script_output': script_output})
+            return render(request, 'output.html', {'output': script_output})
 
         elif file_extension == '.c':
             # Handle C code compilation and execution
-            user_file = UserFile(user=user, file_name=file_name, file_location=file_location, description=description)
+            user_file = user_file(user=user, file_name=file_name, file_location=file_location, description=description)
             user_file.save()
 
             # Save the uploaded C file to the specified location
@@ -125,10 +107,19 @@ def upload_file(request):
 
     return render(request, 'upload.html')
 
-
-
 @login_required
 def list_files(request):
-    user_files= UserFile.objects.filter(user=request.user)
+    user_files= user_files.objects.filter(user=request.user)
     return render(request, 'list.html',{'user_files':user_files})
->>>>>>> fe0a23d (only file no reg/sign)
+
+def registration_view(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Log the user in
+            login(request, user)
+            return redirect('home')  # Replace 'home' with the URL name of your home page
+    else:
+        form = RegistrationForm()
+    return render(request, 'register.html', {'form': form})
