@@ -1,19 +1,19 @@
 from django.shortcuts import render, redirect
 from django import forms
 from django.views.generic.edit import CreateView
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import get_user, login
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import get_user, login, logout, authenticate
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from .serializer import *
 from .models import *
 from .forms import RegistrationForm
 # from django.views.decorators.csrf import csrf_exempt
 from pathlib import Path
-from django.contrib.auth.decorators import login_required
 import os
-import subprocess
+import subprocess, logging
 
 '''
 class SignUpView(CreateView):
@@ -30,7 +30,7 @@ class UserView(APIView):
 
     def get(self, request):
         output = [{"username": output.username, "email": output.email}
-                  for output in User.objects.all()]
+                  for output in UserFile.objects.all()]
         return Response(output)
 
     def post(self, request):
@@ -43,9 +43,15 @@ class UserView(APIView):
 def SignUpView(request):
     return render(request, 'Signup.html', {})
 
+@login_required
+def logout_view(request):
+    logout(request)
+    #return redirect('home.html')  # Redirect to the login page (replace with your login URL)
+    return render(request, 'home.html')
+
 
 def home(request):
-    return render(request, 'index.html', {})
+    return render(request, 'public/index.html', {})
 
 
 def upload_script(request):
@@ -67,8 +73,6 @@ def upload_script(request):
         return render(request, 'output.html', {'output': script_output})
 
     return render(request, 'upload.html')
-<<<<<<< HEAD
-=======
 
 @login_required
 def upload_file(request):
@@ -139,6 +143,56 @@ def upload_file(request):
 
 @login_required
 def list_files(request):
-    user_files= UserFile.objects.filter(user=request.user)
+    user_files= user_files.objects.filter(user=request.user)
     return render(request, 'list.html',{'user_files':user_files})
->>>>>>> fe0a23d (only file no reg/sign)
+
+
+logger = logging.getLogger(__name__)
+def login_view(request):
+    if request.method == 'POST':
+        print(request.POST)
+        form = AuthenticationForm(request, request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('home')
+            else:
+                logger.error(f"Login failed for user '{username}'. User is None.")
+        else:
+            logger.error("Invalid form data.")
+            logger.error(form.errors)  # Add this line to log form validation errors
+    else:
+        form = AuthenticationForm()
+    return render(request, 'login.html', {'form': form})
+
+'''
+def registration_view(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        print(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Log the user in
+            login(request, user)
+            return redirect('home')  # Replace 'home' with the URL name of your home page
+    else:
+        form = RegistrationForm()
+    return render(request, 'register.html', {'form': form})
+'''
+
+def registration_view(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = authenticate(request, username=username, password=password)
+            login(request, user)
+            return redirect('home')
+    else:
+        form = UserCreationForm()
+    return render(request, 'register.html', {'form': form})
