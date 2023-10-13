@@ -9,7 +9,7 @@ const HomePage = () => {
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
                 <Link className="navbar-brand" to="/">Student Code Assessment System</Link>
                 <div className="ml-auto">
-                    <Link to="/signup" className="btn btn-light">Sign In</Link>
+                    <Link to="/login" className="btn btn-light">Sign In</Link>
                 </div>
             </nav>
 
