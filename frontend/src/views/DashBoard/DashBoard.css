@@ -1,0 +1,27 @@
+.list-group-item {
+    margin-top: 3px; 
+    margin-bottom: 3px; 
+    padding: 40px 5px; 
+}
+.pagination {
+    display: flex;
+    justify-content: center;
+    /* 居中对齐 */
+    margin-top: 5px;
+    /* 上边距，可以根据需要调整 */
+}
+
+.pagination button {
+    padding: 10px 15px;
+    /* 内边距，增加按钮大小 */
+    margin: 0 5px;
+    /* 左右间隔 */
+    border: none;
+    background-color: #f7f7f7;
+    /* 按钮背景颜色 */
+    cursor: pointer;
+}
+
+.pagination button:hover {
+    background-color: #e0e0e0;
+}
