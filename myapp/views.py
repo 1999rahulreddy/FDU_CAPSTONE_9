@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django import forms
+from rest_framework.permissions import AllowAny
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
@@ -230,7 +232,26 @@ class RegistrationAPIView(generics.CreateAPIView):
     serializer_class = RegistrationSerializer
 
 
+# class LoginAPIView(APIView):
+#     serializer_class = LoginSerializer
+
+#     def post(self, request, *args, **kwargs):
+#         serializer = self.serializer_class(data=request.data)
+#         if serializer.is_valid():
+#             username = serializer.validated_data['username']
+#             password = serializer.validated_data['password']
+#             user = authenticate(request, username=username, password=password)
+#             if user is not None:
+#                 login(request, user)
+#                 return Response({'status': 'login successful'}, status=status.HTTP_200_OK)
+#             else:
+#                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+#         else:
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class LoginAPIView(APIView):
+    serializer_class = LoginSerializer
+    permission_classes = (AllowAny,)
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
@@ -241,7 +262,12 @@ class LoginAPIView(APIView):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return Response({'status': 'login successful'}, status=status.HTTP_200_OK)
+
+                # Get or create a token for the user
+                token, _ = Token.objects.get_or_create(user=user)
+
+                # Return the token in the response
+                return Response({'token': token.key}, status=status.HTTP_200_OK)
             else:
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
@@ -249,7 +275,7 @@ class LoginAPIView(APIView):
 
 
 @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def upload_file(request):
     user = request.user
     if request.method == 'POST':
