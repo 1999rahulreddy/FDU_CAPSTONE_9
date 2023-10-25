@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';  // 导入Link组件
-import VideoBackground from '/Users/spock/Documents/github/capstone/AssessmentSystem/test_project/frontend/src/components/VideoBackground';
+//import VideoBackground from '/Users/spock/Documents/github/capstone/AssessmentSystem/test_project/frontend/src/components/VideoBackground';
+import VideoBackground from '../../components/VideoBackground';
 import './HomePage.css';
 
 const HomePage = () => {
