@@ -277,70 +277,72 @@ class LoginAPIView(APIView):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def upload_file(request):
+    user = request.user
     if request.method == 'POST':
-        user = request.user
         uploaded_file = request.FILES.get('file')
-
         if not uploaded_file:
             return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
 
-        description = request.POST.get('description', '')
         BASE_DIR = Path(__file__).resolve().parent
         file_name = uploaded_file.name
         file_location = os.path.join(BASE_DIR, f'uploadedcode/{file_name}')
+        description = request.POST.get('description', '')
+
+        # Check the file extension
         file_extension = os.path.splitext(file_name)[-1].lower()
-        script_output = None  # Initialize as None
 
         if file_extension == '.py':
             # Handle Python script execution
-            result = data(uploaded_file, user, file_name, file_location, description, 'python')
-            script_output = result.get('output', '')
+            user_file = UserFile(user=user, file_name=file_name,
+                                 file_location=file_location, description=description)
+            user_file.save()
 
+            # Save the uploaded file to the specified location
+            with open(file_location, 'wb+') as file:
+                for chunk in uploaded_file.chunks():
+                    file.write(chunk)
+
+            # Execute the Python script
+            result = subprocess.run(
+                ['python', file_location], capture_output=True, text=True)
+
+            # Access the script output using 'result.stdout'
+            script_output = result.stdout
+
+            return Response({'output': script_output}, status=status.HTTP_200_OK)
         elif file_extension == '.c':
             # Handle C code compilation and execution
-            result = data(uploaded_file, user, file_name, file_location, description, 'c')
-            script_output = result.get('output', '')
+            user_file = UserFile(user=user, file_name=file_name,
+                                 file_location=file_location, description=description)
+            user_file.save()
 
-            if 'error' in result:
-                return Response({'error': result['error']}, status=status.HTTP_400_BAD_REQUEST)
+            # Save the uploaded C file to the specified location
+            with open(file_location, 'wb+') as file:
+                for chunk in uploaded_file.chunks():
+                    file.write(chunk)
 
+            # Compile the C code (assuming it's a single .c file)
+            compile_command = ['gcc', file_location,
+                               '-o', f'{file_location}_compiled_file']
+            compile_result = subprocess.run(
+                compile_command, capture_output=True, text=True)
+
+            if compile_result.returncode == 0:
+                # Successfully compiled, execute the compiled binary
+                execute_command = [f'{file_location}_compiled_file']
+                execution_result = subprocess.run(
+                    execute_command, capture_output=True, text=True)
+
+                # Access the execution output using 'execution_result.stdout'
+                script_output = execution_result.stdout
+                #subprocess.call(['rm','-r',])
+                #Delete the file after compilation and getting the final result 
+                os.remove(os.path.join(file_location,f'{file_location}_compiled_file'))
+
+                return Response({'output': script_output}, status=status.HTTP_200_OK)
+            else:
+                # Compilation failed
+                return Response({'error': 'Compilation failed'}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'error': 'Invalid file type'}, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response({'output': script_output}, status=status.HTTP_200_OK)
-
     return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-def data(uploaded_file, user, file_name, file_location, description, language):
-    user_file = UserFile(user=user, file_name=file_name, file_location=file_location, description=description)
-    user_file.save()
-
-    # Save the uploaded file to the specified location
-    with open(file_location, 'wb+') as file:
-        for chunk in uploaded_file.chunks():
-            file.write(chunk)
-
-    if language == 'python':
-        result = subprocess.run(['python', file_location], capture_output=True, text=True)
-        script_output = result.stdout  # Set the script_output here
-        os.remove(f'{file_location}')
-
-    elif language == 'c':
-        # Compile the C code (assuming it's a single .c file)
-        compile_command = ['gcc', file_location, '-o', f'{file_location}_compiled_file']
-        compile_result = subprocess.run(compile_command, capture_output=True, text=True)
-
-        if compile_result.returncode == 0:
-            # Successfully compiled, execute the compiled binary
-            execute_command = [f'{file_location}_compiled_file']
-            execution_result = subprocess.run(execute_command, capture_output=True, text=True)
-            script_output = execution_result.stdout
-            # Delete the file after compilation and getting the final result
-            os.remove(f'{file_location}_compiled_file')
-            os.remove(f'{file_location}')
-
-        else:
-            # Compilation failed
-            return {'error': 'Compilation failed'}
-
-    return {'output': script_output}
