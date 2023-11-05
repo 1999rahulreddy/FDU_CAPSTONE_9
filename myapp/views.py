@@ -1,30 +1,19 @@
 from django.shortcuts import render, redirect
 from django import forms
-from rest_framework.permissions import AllowAny
-from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from django.views.generic.edit import CreateView
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user, login, logout, authenticate
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from rest_framework import generics, permissions
-from .serializer import RegistrationSerializer
-from rest_framework import generics, status
 from rest_framework.authtoken.models import Token
-from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import generics, status, permissions
+from rest_framework.authtoken.models import Token
+from .serializer import RegistrationSerializer
+
 from .serializer import *
 from .models import *
 from .forms import RegistrationForm
