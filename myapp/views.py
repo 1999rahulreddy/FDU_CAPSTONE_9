@@ -17,7 +17,9 @@ from .models import *
 from .forms import RegistrationForm
 # from django.views.decorators.csrf import csrf_exempt
 from pathlib import Path
-import os, subprocess, logging
+import os
+import subprocess
+import logging
 from .data import *
 
 '''
@@ -217,9 +219,19 @@ class RegistrationAPIView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegistrationSerializer
 
+
 class ChangePasswordView(APIView):
     serializer_class = ChangePasswordSerializer
     permission_classes = (IsAuthenticated, )
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(
+            data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg': 'Password changed successfully'}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # class LoginAPIView(APIView):
@@ -282,11 +294,13 @@ def upload_file(request):
 
         if file_extension == '.py':
             # Handle Python script execution
-            result = data(uploaded_file, user, file_name, file_location, description, 'python')
+            result = data(uploaded_file, user, file_name,
+                          file_location, description, 'python')
 
         elif file_extension == '.c':
             # Handle C code compilation and execution
-            result = data(uploaded_file, user, file_name, file_location, description, 'c')
+            result = data(uploaded_file, user, file_name,
+                          file_location, description, 'c')
 
             if 'error' in result:
                 return Response({'error': result['error']}, status=status.HTTP_400_BAD_REQUEST)
@@ -294,9 +308,9 @@ def upload_file(request):
         else:
             return Response({'error': 'Invalid file type'}, status=status.HTTP_400_BAD_REQUEST)
 
-        #return Response({'output': script_output}, status=status.HTTP_200_OK)
-        #return Response({'Test_Cases':result['test_cases'],'Results': result['results'],'Score':result['score']}, status=status.HTTP_200_OK)
-        return Response(result,status=status.HTTP_200_OK)
+        # return Response({'output': script_output}, status=status.HTTP_200_OK)
+        # return Response({'Test_Cases':result['test_cases'],'Results': result['results'],'Score':result['score']}, status=status.HTTP_200_OK)
+        return Response(result, status=status.HTTP_200_OK)
 
     return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
