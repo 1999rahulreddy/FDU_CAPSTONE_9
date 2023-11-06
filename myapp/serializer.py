@@ -35,10 +35,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-class ChangePasswordSerializer(serialzer.ModelSerialzer):
-    old_password = serilizer.CharField(required=True)
-    new_password = serilizer.CharField(required=True)
-    confirm_new_passowrd = serilizer.CharField(required=True)
+class ChangePasswordSerializer(serializers.ModelSerializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    confirm_new_passowrd = serializers.CharField(required=True)
     class Meta:
         model = User
         fields = ['old_password','new_password','confirm_new_passowrd']
