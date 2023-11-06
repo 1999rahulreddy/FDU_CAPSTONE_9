@@ -12,8 +12,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics, status, permissions
 from rest_framework.authtoken.models import Token
-from .serializer import RegistrationSerializer
-
 from .serializer import *
 from .models import *
 from .forms import RegistrationForm
@@ -218,6 +216,10 @@ class RegistrationAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = [permissions.AllowAny]
     serializer_class = RegistrationSerializer
+
+class ChangePasswordView(APIView):
+    serializer_class = ChangePasswordSerializer
+    permission_classes = (IsAuthenticated, )
 
 
 # class LoginAPIView(APIView):
