@@ -50,12 +50,12 @@ class ChangePasswordSerializer(serialzer.ModelSerialzer):
         confirm_new_password = self.validated_data['confirm_password']
         if not current_user.check_password(old_password):
             raise serializers.ValidationError({"old_password": "Old Password is incorrect."})
-            elif new_password != confirm_new_password:
-                raise serializers.ValidationError({"new_password":"New passwords do not match."})
-                else:
-                    current_user.set_password(new_password)
-                    current_user.save()
-                    return current_user
+        elif new_password != confirm_new_password:
+            raise serializers.ValidationError({"new_password":"New passwords do not match."})
+        else:
+            current_user.set_password(new_password)
+            current_user.save()
+            return current_user
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
