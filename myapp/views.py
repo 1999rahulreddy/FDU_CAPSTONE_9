@@ -22,6 +22,9 @@ import subprocess
 import logging
 from .data import *
 
+from .serializer import ProfSerializer
+from django.http import JsonResponse
+
 '''
 class SignUpView(CreateView):
     form_class = UserCreationForm
@@ -348,3 +351,29 @@ def data(uploaded_file, user, file_name, file_location, description, language):
 
     return {'output': script_output}
 '''
+
+
+@api_view(['GET'])
+def get_prof_overview(request):
+    return Response()
+
+
+@api_view(['GET'])
+def get_prof_profile(request, id):
+    try:
+        profile = Professor.objects.get(id=id)
+        serializer = ProfSerializer(profile)
+        return Response(serializer.data)
+    except Professor.DoesNotExist:
+        return JsonResponse({'error': 'Professor not found'}, status=404)
+
+
+@api_view(['GET'])
+def get_list_results(request):
+    return Response()
+
+
+@api_view(['GET'])
+def get_classes_info(request):
+    return Response()
+
