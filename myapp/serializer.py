@@ -1,28 +1,27 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
-
-from rest_framework.serializers import Serializer, FileField
-
+from django.contrib.auth.models import *
+from rest_framework.serializers import Serializer
+#from .models import Professor, Student, TestCase
+from .models import *
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ('id', 'username', 'email', 'password')
-
+        model = Student
+        fields = ('student_id', 'student_name', 'email', 'password', 'courses')
 
 class RegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(
         style={'input_type': 'password'}, write_only=True)
 
     class Meta:
-        model = User
+        model = Student
         fields = ['username', 'password', 'password2']
         extra_kwargs = {
             'password': {'write_only': True}
         }
 
     def save(self):
-        user = User(
+        user = Student(
             username=self.validated_data['username']
         )
         password = self.validated_data['password']
@@ -34,7 +33,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
-
 
 class ChangePasswordSerializer(serializers.ModelSerializer):
     old_password = serializers.CharField(required=True)
@@ -58,14 +56,15 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
             current_user.set_password(new_password)
             current_user.save()
             return current_user
-        
 
-
+class TestCaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TestCase
+        fields = ['assignment_no', 'course', 'input_data', 'output_data', 'problem_details']
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
-
 
 class FileUploadSerializer(serializers.Serializer):
     file = serializers.FileField()

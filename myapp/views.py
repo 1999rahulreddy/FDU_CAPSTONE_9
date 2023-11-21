@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django import forms
 from django.views.generic.edit import CreateView
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user, login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth.hashers import check_password, make_password
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -37,7 +38,8 @@ class UserView(APIView):
 
     def get(self, request):
         output = [{"username": output.username, "email": output.email}
-                  for output in UserFile.objects.all()]
+                  #for output in UserFile.objects.all()]
+                  for output in Code.objects.all()]
         return Response(output)
 
     def post(self, request):
@@ -99,8 +101,8 @@ def upload_file(request):
 
         if file_extension == '.py':
             # Handle Python script execution
-            user_file = UserFile(user=user, file_name=file_name,
-                                 file_location=file_location, description=description)
+            #user_file = UserFile(user=user, file_name=file_name,file_location=file_location, description=description)
+            user_file = Code(user=user, file_name=file_name,file_location=file_location, description=description)
             user_file.save()
 
             # Save the uploaded file to the specified location
@@ -119,8 +121,8 @@ def upload_file(request):
 
         elif file_extension == '.c':
             # Handle C code compilation and execution
-            user_file = UserFile(user=user, file_name=file_name,
-                                 file_location=file_location, description=description)
+            #user_file = UserFile(user=user, file_name=file_name,file_location=file_location, description=description)
+            user_file = Code(user=user, file_name=file_name,file_location=file_location, description=description)
             user_file.save()
 
             # Save the uploaded C file to the specified location
@@ -182,23 +184,6 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
 
-
-'''
-def registration_view(request):
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        print(request.POST)
-        if form.is_valid():
-            user = form.save()
-            # Log the user in
-            login(request, user)
-            return redirect('home')  # Replace 'home' with the URL name of your home page
-    else:
-        form = RegistrationForm()
-    return render(request, 'register.html', {'form': form})
-'''
-
-
 def registration_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -215,10 +200,36 @@ def registration_view(request):
 
 
 class RegistrationAPIView(generics.CreateAPIView):
-    queryset = User.objects.all()
+    #queryset = User.objects.all()
+    queryset = Student.objects.all()
     permission_classes = [permissions.AllowAny]
     serializer_class = RegistrationSerializer
 
+class Assign_Test_Case(APIView):
+    serializer_class = TestCaseSerializer
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            # Assuming you have a model named YourTestCaseModel, adjust it accordingly
+            testcase_instance = TestCase.objects.create(
+                # Extract fields from the serializer data
+                field1=serializer.validated_data['field1'],
+                field2=serializer.validated_data['field2'],
+                # ... (repeat for other fields)
+            )
+
+            # You can associate the test case with a specific user if needed
+            # testcase_instance.user = request.user
+            # testcase_instance.save()
+
+            return Response({'message': 'Test case assigned successfully'}, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+        
 
 class ChangePasswordView(APIView):
     serializer_class = ChangePasswordSerializer
@@ -232,8 +243,9 @@ class ChangePasswordView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+'''
 class LoginAPIView(APIView):
-    serializer_class = LoginSerializer
+    serializer_class = LoginSerializer      
     permission_classes = (AllowAny,)
     serializer_class = LoginSerializer
 
@@ -242,7 +254,55 @@ class LoginAPIView(APIView):
         if serializer.is_valid():
             username = serializer.validated_data['username']
             password = serializer.validated_data['password']
+            print(password)
+
+            user = User.objects.get(username=username)
+            print(user)
             user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+
+                # Get or create a token for the user
+                token, _ = Token.objects.get_or_create(user=user)   
+
+                # Return the token in the response
+                return Response({'token': token.key}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+'''
+
+logger = logging.getLogger(__name__)
+
+class LoginAPIView(APIView):
+    serializer_class = LoginSerializer
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            username = serializer.validated_data['username']
+            password = serializer.validated_data['password']
+
+            # Debugging: Print received username and password
+            #logger.info(f"Received username: {username}")
+            #logger.info(f"Received password: {password}")
+
+            #hashed_password = make_password(password)
+            #print(hashed_password)
+            #print(check_password(password,hashed_password))
+
+
+            #print(Student.objects.get_by_natural_key(username))
+
+            # Authenticate the user
+            user = authenticate(request, username=username, password=password)
+
+            # Debugging: Print authenticated user
+            #logger.info(f"Authenticated user: {user}")
+
             if user is not None:
                 login(request, user)
 
@@ -255,6 +315,8 @@ class LoginAPIView(APIView):
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 # class LoginAPIView(APIView):
 #     serializer_class = LoginSerializer
 
@@ -279,7 +341,11 @@ class LoginAPIView(APIView):
 def upload_file(request):
     if request.method == 'POST':
         user = request.user
+        print(user)
+        student_instance = get_object_or_404(Student, username=user)
+        print(student_instance)
         uploaded_file = request.FILES.get('file')
+        print(uploaded_file.name)
 
         if not uploaded_file:
             return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
@@ -292,13 +358,13 @@ def upload_file(request):
 
         if file_extension == '.py':
             # Handle Python script execution
-            result = data(uploaded_file, user, file_name,
-                          file_location, description, 'python')
+            #result = data(uploaded_file, student_instance, file_name, file_location, description, 'python')
+            result = data(uploaded_file, student_instance, file_location, description, 'python')
 
         elif file_extension == '.c':
             # Handle C code compilation and execution
-            result = data(uploaded_file, user, file_name,
-                          file_location, description, 'c')
+            #result = data(uploaded_file, student_instance, file_name, file_location, description, 'c')
+            result = data(uploaded_file, student_instance, file_location, description, "c")
 
             if 'error' in result:
                 return Response({'error': result['error']}, status=status.HTTP_400_BAD_REQUEST)
