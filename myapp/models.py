@@ -64,3 +64,15 @@ class TestCase(models.Model):
 
     def __str__(self):
         return f"Test Case for Assignment {self.assignment_no} in {self.course.course_name}"
+
+class Professor(models.Model):
+
+    prof_name = models.CharField(max_length=255)
+    prof_family = models.CharField(max_length=255)
+    prof_email = models.CharField(max_length=255)
+    prof_password = models.CharField(max_length=255)
+
+    # one-to-many relation with class should be specified in class Model
+
+    def __str__(self):
+        return f"{self.prof_name} {self.prof_family}"

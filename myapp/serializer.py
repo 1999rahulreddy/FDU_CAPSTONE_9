@@ -3,6 +3,10 @@ from django.contrib.auth.models import *
 from rest_framework.serializers import Serializer
 #from .models import Professor, Student, TestCase
 from .models import *
+from django.contrib.auth.models import User
+from .models import Professor
+
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -69,3 +73,9 @@ class LoginSerializer(serializers.Serializer):
 class FileUploadSerializer(serializers.Serializer):
     file = serializers.FileField()
     description = serializers.CharField(required=False, allow_blank=True)
+
+
+class ProfSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Professor
+        fields = ('prof_name', 'prof_family', 'prof_email')
