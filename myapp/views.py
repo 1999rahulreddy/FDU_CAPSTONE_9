@@ -22,8 +22,7 @@ import os
 import subprocess
 import logging
 from .data import *
-from .serializer import ProfSerializer
-from django.http import JsonResponse
+
 '''
 class SignUpView(CreateView):
     form_class = UserCreationForm
@@ -359,13 +358,17 @@ def upload_file(request):
 
         if file_extension == '.py':
             # Handle Python script execution
-            #result = data(uploaded_file, student_instance, file_name, file_location, description, 'python')
-            result = data(uploaded_file, student_instance, file_location, description, 'python')
+            result = data(uploaded_file, student_instance, file_name, file_location, description, 'python')
+            #need to add (assignment no, course id) while user clicks on the take test button while trying to submit code
+            #and then pass to the data method where am using default values.
+            #result = data(user,uploaded_file, student_instance, file_location, description, 'python')
 
         elif file_extension == '.c':
             # Handle C code compilation and execution
-            #result = data(uploaded_file, student_instance, file_name, file_location, description, 'c')
-            result = data(uploaded_file, student_instance, file_location, description, "c")
+            result = data(uploaded_file, student_instance, file_name, file_location, description, 'c')
+            #need to add (assignment no, course id) while user clicks on the take test button while trying to submit code
+            #and then pass to the data method where am using default values.
+            #result = data(user,uploaded_file, student_instance, file_location, description, "c")
 
             if 'error' in result:
                 return Response({'error': result['error']}, status=status.HTTP_400_BAD_REQUEST)
@@ -378,6 +381,42 @@ def upload_file(request):
         return Response(result, status=status.HTTP_200_OK)
 
     return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+class GradesView(APIView):
+    serializer_class = GradesSerializer
+    permission_classes = (IsAuthenticated, )
+    def get(self, request, student_id, course_id, format=None):
+        try:
+            grades = Grades.objects.filter(student_id=student_id, course_id=course_id)
+            print(grades)
+            serializer = GradesSerializer(grades, many=True)
+            print(serializer)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'errorrr': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class StudentCoursesView(APIView):
+    serializer_class = StudentSerializer
+    permission_classes = (IsAuthenticated, )
+    #permission_classes = (AllowAny,)
+    def get(self, request, student_id, format=None):
+        try:
+            #student = Student.objects.get(student_id=student_id)
+            
+            student = Student.objects.get(student_id = student_id)
+            
+            #student = Student.objects.get(user_id=student_id)
+            #serializer = StudentSerializer(student.student.all(), many=True)
+            #serializer = StudentSerializer(student.courses.all(), many=True)
+            serializer = StudentSerializer(student)
+            #serializer = CourseSerializer(student.courses.all(), many=True)
+            print(serializer)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Student.DoesNotExist:
+            return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print(str(e))
+            return Response({'errorr': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 '''
@@ -415,30 +454,3 @@ def data(uploaded_file, user, file_name, file_location, description, language):
 
     return {'output': script_output}
 '''
-
-
-
-@api_view(['GET'])
-def get_prof_overview(request):
-    return Response()
-
-
-@api_view(['GET'])
-def get_prof_profile(request, id):
-    try:
-        profile = Professor.objects.get(id=id)
-        serializer = ProfSerializer(profile)
-        return Response(serializer.data)
-    except Professor.DoesNotExist:
-        return JsonResponse({'error': 'Professor not found'}, status=404)
-
-
-@api_view(['GET'])
-def get_list_results(request):
-    return Response()
-
-
-@api_view(['GET'])
-def get_classes_info(request):
-    return Response()
-

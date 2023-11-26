@@ -22,10 +22,6 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('api/login/', LoginAPIView.as_view(), name='api-login'),
 
-
-    path('prof/overview/', views.get_prof_overview, name='api-prof-overview'),
-    path('prof/profile/<int:id>', views.get_prof_profile, name='api-prof-profile'),
-    path('prof/listresults/', views.get_list_results, name='api-list-results'),
-    path('prof/classesinfo/', views.get_classes_info, name='api-classes-info'),
-
+    path('api/view_grades/<int:student_id>/<int:course_id>/', GradesView.as_view(), name='grades-api'),
+    path('api/course_list/<int:student_id>/', StudentCoursesView.as_view(), name='course_students'),
 ]

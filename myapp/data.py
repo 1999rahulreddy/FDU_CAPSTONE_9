@@ -1,7 +1,9 @@
 import os, subprocess, sys
 from .models import *
 def data(uploaded_file, user, file_name, file_location, description, language):
-    user_file = UserFile(user=user, file_name=file_name, file_location=file_location, description=description)
+    #user_file = UserFile(user=user, file_name=file_name, file_location=file_location, description=description)
+    #only used hard coded values for assignment no., due_date`  ` and course id need to change these
+    user_file = Code(student=user, code_file=file_location, description=description, language = language, course_id="1", assignment_no = "1", due_date="2022-09-01 00:30:00")
     user_file.save()
     test_cases = [[1, 2, 3], [3, 2, 1], [3, 4, 0]]
     expected_output = [6, 6, 6]

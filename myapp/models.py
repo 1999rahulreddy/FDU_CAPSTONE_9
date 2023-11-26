@@ -37,7 +37,7 @@ class Student(User):
     #password = models.CharField(max_length=255)
     courses = models.ManyToManyField(Course)
 
-    USERNAME_FIELD = 'username'
+    #USERNAME_FIELD = 'user_id'
 
     def __str__(self):
         return self.student_name
@@ -49,6 +49,7 @@ class Code(models.Model):
     description = models.CharField(max_length=255)
     language = models.CharField(max_length=255)
     code_file =models.FileField(upload_to='uploadedcode/')
+    due_date = models.DateTimeField()
 
     #file_name = models.TextField()
 
@@ -64,15 +65,14 @@ class TestCase(models.Model):
 
     def __str__(self):
         return f"Test Case for Assignment {self.assignment_no} in {self.course.course_name}"
-
-class Professor(models.Model):
-
-    prof_name = models.CharField(max_length=255)
-    prof_family = models.CharField(max_length=255)
-    prof_email = models.CharField(max_length=255)
-    prof_password = models.CharField(max_length=255)
-
-    # one-to-many relation with class should be specified in class Model
+    
+class Grades(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    assignment_no = models.PositiveIntegerField()
+    submission_date = models.DateTimeField(auto_now_add=True)
+    #code = models.ForeignKey(Code, on_delete=models.CASCADE)
+    grade = models.FloatField()
 
     def __str__(self):
-        return f"{self.prof_name} {self.prof_family}"
+        return f"Grades for Assignment {self.assignment_no} in {self.course.course_name} for {self.student.username}"

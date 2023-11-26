@@ -3,10 +3,6 @@ from django.contrib.auth.models import *
 from rest_framework.serializers import Serializer
 #from .models import Professor, Student, TestCase
 from .models import *
-from django.contrib.auth.models import User
-from .models import Professor
-
-
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -74,8 +70,21 @@ class FileUploadSerializer(serializers.Serializer):
     file = serializers.FileField()
     description = serializers.CharField(required=False, allow_blank=True)
 
-
-class ProfSerializer(serializers.ModelSerializer):
+class GradesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Professor
-        fields = ('prof_name', 'prof_family', 'prof_email')
+        model = Grades
+        fields = '__all__'
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    #students = StudentSerializer(many=True, read_only=True)
+    class Meta:
+        model = Course
+        fields = ['course_id', 'course_name']
+
+class StudentSerializer(serializers.ModelSerializer):
+    courses = CourseSerializer(many=True, read_only=True)
+    #student = UserSerializer(many=True, read_only=True)
+    class Meta:
+        model = Student
+        fields = ['student_id', 'student_name', 'courses']
