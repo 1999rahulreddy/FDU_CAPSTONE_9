@@ -417,6 +417,21 @@ class StudentCoursesView(APIView):
         except Exception as e:
             print(str(e))
             return Response({'errorr': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class ProfessorCoursesView(APIView):
+    serializer_class = ProfessorSerializer
+    permission_classes = (IsAuthenticated, )
+    def get(self, request, professor_id, format=None):
+        try:
+            professor = Professor.objects.get(professor_id = professor_id)
+            serializer = ProfessorSerializer(professor)
+            print(serializer)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Professor.DoesNotExist:
+            return Response({'error': 'Professor not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print(str(e))
+            return Response({'errorr': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 '''

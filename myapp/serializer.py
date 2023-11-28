@@ -88,3 +88,10 @@ class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = ['student_id', 'student_name', 'courses']
+
+class ProfessorSerializer(serializers.ModelSerializer):
+    courses = CourseSerializer(many=True, read_only=True)
+    #student = UserSerializer(many=True, read_only=True)
+    class Meta:
+        model = Professor
+        fields = ['professor_id', 'professor_name', 'courses']
