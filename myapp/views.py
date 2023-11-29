@@ -469,3 +469,21 @@ def data(uploaded_file, user, file_name, file_location, description, language):
 
     return {'output': script_output}
 '''
+@api_view(['GET'])
+def get_prof_overview(request):
+    return Response()
+
+
+@api_view(['GET'])
+def get_prof_profile(request, id):
+    try:
+        profile = Professor.objects.get(id=id)
+        serializer = ProfessorSerializer(profile)
+        return Response(serializer.data)
+    except Professor.DoesNotExist:
+        return ProfessorSerializer({'error': 'Professor not found'}, status=404)
+
+
+@api_view(['GET'])
+def get_list_results(request):
+    return Response()

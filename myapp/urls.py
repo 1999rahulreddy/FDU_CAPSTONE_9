@@ -29,4 +29,9 @@ urlpatterns = [
     path('api/course_list/<int:student_id>/', StudentCoursesView.as_view(), name='course_students'),
 
     path('api/courses_list/<int:professor_id>/', ProfessorCoursesView.as_view(), name='course_professors'),
+
+    path('prof/overview/', views.get_prof_overview, name='api-prof-overview'),
+    path('prof/profile/<int:id>', views.get_prof_profile, name='api-prof-profile'),
+    path('prof/listresults/', views.get_list_results, name='api-list-results'),
+
 ]
