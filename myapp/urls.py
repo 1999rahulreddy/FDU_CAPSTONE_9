@@ -26,9 +26,9 @@ urlpatterns = [
     path('upload/', views.upload_file, name='upload_file'),
     path('signup/', views.UserView.as_view(), name='signup'),
     path('api/view_grades/<int:student_id>/<int:course_id>/', GradesView.as_view(), name='grades-api'),
-    path('api/course_list/<int:student_id>/', StudentCoursesView.as_view(), name='course_students'),
+    path('api/Student_course_list/<int:student_id>/', StudentCoursesView.as_view(), name='course_students'),
 
-    path('api/courses_list/<int:professor_id>/', ProfessorCoursesView.as_view(), name='course_professors'),
+    path('api/Professor_course_list/<int:professor_id>/', ProfessorCoursesView.as_view(), name='course_professors'),
 
     path('prof/overview/', views.get_prof_overview, name='api-prof-overview'),
     path('prof/profile/<int:id>', views.get_prof_profile, name='api-prof-profile'),

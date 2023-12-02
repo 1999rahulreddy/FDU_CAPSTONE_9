@@ -5,8 +5,10 @@ def data(uploaded_file, user, file_name, file_location, description, language):
     #only used hard coded values for assignment no., due_date`  ` and course id need to change these
     user_file = Code(student=user, code_file=file_location, description=description, language = language, course_id="1", assignment_no = "1", due_date="2022-09-01 00:30:00")
     user_file.save()
-    test_cases = [[1, 2, 3], [3, 2, 1], [3, 4, 0]]
-    expected_output = [6, 6, 6]
+    #test_cases = [[1, 2, 3], [3, 2, 1], [3, 4, 0]]
+    test_cases = [[123,322],[344,233]]
+    #expected_output = [6, 6, 6]
+    expected_output = [f'123 is palindrome: False\n322 is palindrome: False', f"344 is palindrome: False\n233 is palindrome: False"]
 
     # Save the uploaded file to the specified location
     with open(file_location, 'wb+') as file:
@@ -24,12 +26,13 @@ def data(uploaded_file, user, file_name, file_location, description, language):
             output = result.stdout.strip()
 
             # Check if the output matches the expected output
-            if int(output) == expected_output[idx]:
-                results.append("pass")
+            if (output) == expected_output[idx]:
+                results.append(f'Test case {idx+1} Passed\n')
             else:
-                results.append("fail")
+                results.append(f'Test case {idx+1} Failed\n')
 
-        pass_count = results.count("pass")
+        #pass_count = results.count("Passed")
+        pass_count = sum("Passed" in result for result in results)
         total_count = len(test_cases)
         score = (pass_count / total_count) * 100 if total_count > 0 else 0
 
@@ -57,9 +60,9 @@ def data(uploaded_file, user, file_name, file_location, description, language):
 
                 # Check if the output matches the expected output
                 if int(output) == expected_output[idx]:
-                    results.append("pass")
+                    results.append(f'Test case {idx+1} Passed\n')
                 else:
-                    results.append("fail")
+                    results.append(f'Test case {idx+1} Failed\n')
 
             pass_count = results.count("pass")
             total_count = len(test_cases)
@@ -72,7 +75,7 @@ def data(uploaded_file, user, file_name, file_location, description, language):
             }
 
             # Delete the file after compilation and getting the final result
-            os.remove(f'{file_location}_compiled_file')
+            #os.remove(f'{file_location}_compiled_file')
 
         else:
             # Compilation failed

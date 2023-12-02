@@ -343,7 +343,8 @@ def upload_file(request):
         user = request.user
         print(user)
         student_instance = get_object_or_404(Student, username=user)
-        print(student_instance)
+        student_name = student_instance.student_name#get username
+        print(student_name)
         uploaded_file = request.FILES.get('file')
         print(uploaded_file.name)
 
@@ -417,7 +418,8 @@ class StudentCoursesView(APIView):
         except Exception as e:
             print(str(e))
             return Response({'errorr': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
+
 class ProfessorCoursesView(APIView):
     serializer_class = ProfessorSerializer
     permission_classes = (IsAuthenticated, )
@@ -432,7 +434,6 @@ class ProfessorCoursesView(APIView):
         except Exception as e:
             print(str(e))
             return Response({'errorr': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 '''
 def data(uploaded_file, user, file_name, file_location, description, language):
@@ -469,6 +470,7 @@ def data(uploaded_file, user, file_name, file_location, description, language):
 
     return {'output': script_output}
 '''
+
 @api_view(['GET'])
 def get_prof_overview(request):
     return Response()
