@@ -1,0 +1,50 @@
+/* StudentProfile.css */
+
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+.border-right {
+    border-right: 1px solid #dee2e6 !important;
+}
+
+
+/* User Profile Styles */
+.user-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-pic {
+    border-radius: 70%;
+    width: 150px;
+    /* adjust as needed */
+    height: 150px;
+    /* adjust as needed */
+    object-fit: cover;
+    margin-bottom: 1rem;
+}
+
+/* Ensure buttons are aligned correctly */
+.btn-primary {
+    margin-top: 3rem;
+}
+
+/* Center the text for name and email */
+.user-info h3,
+.user-info p {
+    text-align: center;
+    margin: 3rem 0;
+}
+
+/* Modal custom styles */
+.Modal {
+    /* Your custom styles for modal */
+}
+
+/* Footer custom styles */
+.Footer {
+    /* Your custom styles for footer */
+}

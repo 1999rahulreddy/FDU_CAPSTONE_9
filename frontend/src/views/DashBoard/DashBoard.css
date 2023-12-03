@@ -25,3 +25,41 @@
 .pagination button:hover {
     background-color: #e0e0e0;
 }
+
+/* DashBoard.css */
+.dashboard-squares {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.dashboard-square {
+    width: 48%;
+    /* Adjust width as needed */
+    padding: 20px;
+    background-color: #f0f0f0;
+    /* Your color choice */
+    border-radius: 4px;
+    /* Optional rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Optional shadow */
+}
+
+.dashboard-square-content {
+    text-align: center;
+}
+
+.dashboard-square-title {
+    display: block;
+    font-size: 1.5em;
+    color: #333;
+    /* Your color choice */
+    margin-bottom: 10px;
+}
+
+.dashboard-square-number {
+    display: block;
+    font-size: 2.5em;
+    color: #333;
+    /* Your color choice */
+}

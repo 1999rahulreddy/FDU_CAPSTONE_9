@@ -1,0 +1,96 @@
+import React, { Component } from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+import './CourseListPage.css'; // Ensure this CSS file exists or create it with your desired styles
+
+class CourseListPage extends Component {
+    state = {
+        studentId: null,
+        studentName: '',
+        courses: [],
+        isLoading: true,
+    };
+
+    componentDidMount() {
+        this.fetchCourses();
+    }
+
+    fetchCourses = async () => {
+        try {
+            const headers = {
+                'Authorization': `Token ${localStorage.getItem('token')}`
+            };
+            const response = await axios.get('http://127.0.0.1:8000/api/Student_course_list/1/', { headers });
+            this.setState({
+                studentId: response.data.student_id,
+                studentName: response.data.student_name,
+                courses: response.data.courses,
+                isLoading: false,
+            });
+        } catch (error) {
+            console.error('There was an error fetching the courses:', error);
+            this.setState({ isLoading: false });
+        }
+    };
+
+    render() {
+        const { studentName, courses, isLoading } = this.state;
+
+        if (isLoading) {
+            return <div>Loading courses...</div>;
+        }
+
+        return (
+            <div className="container mt-5">
+                <div className="row">
+                    <div className="col-md-3">
+                        {/* Sidebar */}
+                        <div className="bg-light border-right" id="sidebar-wrapper">
+                            <div className="sidebar-heading">Student Dashboard</div>
+                            <div className="list-group list-group-flush">
+                                <Link to="/dashboard" className="list-group-item list-group-item-action bg-light">Dashboard</Link>
+                                <Link to="/settings" className="list-group-item list-group-item-action bg-light">Settings</Link>
+                                <Link to="/code-assessment-history" className="list-group-item list-group-item-action bg-light">All Code Assessment History</Link>
+                                <Link to="/grades" className="list-group-item list-group-item-action bg-light">Grades</Link>
+                                <Link to="/schedule" className="list-group-item list-group-item-action bg-light">My Schedule</Link>
+                                <Link to="/documents" className="list-group-item list-group-item-action bg-light">My Documents</Link>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-md-9">
+                        <h1>{studentName || 'Student'}'s Dashboard</h1>
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>Course ID</th>
+                                    <th>Course Name</th>
+                                    <th>Grade</th>
+                                    <th>Take Test</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {courses.map((course, index) => (
+                                    <tr key={index}>
+                                        <td>{course.course_id}</td>
+                                        <td>{course.course_name}</td>
+                                        <td>
+                                            {/* Assume /grade-page/:studentId/:courseId is a valid route */}
+                                            <Link to={`/grade-page/${this.state.studentId}/${course.course_id}`}>Grade</Link>
+                                        </td>
+                                        <td>
+                                            {course.hasNewAssessment
+                                                ? <Link to={`/take-test/${course.course_id}`}>Take Test</Link>
+                                                : 'No'}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+
+export default CourseListPage;
