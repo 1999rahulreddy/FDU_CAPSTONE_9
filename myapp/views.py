@@ -335,7 +335,7 @@ class LoginAPIView(APIView):
 #             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-'''
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def upload_file(request):
@@ -382,8 +382,6 @@ def upload_file(request):
         return Response(result, status=status.HTTP_200_OK)
 
     return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-'''
-
 
 class GradesView(APIView):
     serializer_class = GradesSerializer
@@ -471,131 +469,83 @@ def data(uploaded_file, user, file_name, file_location, description, language):
             return {'error': 'Compilation failed'}
 
     return {'output': script_output}
-
-
-def upload_file(request):
-    if request.method == 'POST':
-        user = request.user
-        student_instance = get_object_or_404(Student, username=user)
-        student_name = student_instance.student_name
-        uploaded_file = request.FILES.get('file')
-        description = request.POST.get('description', '')
-        course_id = request.POST.get('course_id', '')  # Assuming you send the course_id in the POST request
-
-        if not uploaded_file:
-            return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
-
-        BASE_DIR = Path(__file__).resolve().parent
-        student_folder = os.path.join(BASE_DIR, f'uploadedcode/{student_name}')
-
-        # Create the student's folder if it doesn't exist
-        os.makedirs(student_folder, exist_ok=True)
-
-        # Add the course folder inside the student's folder
-        course_folder = os.path.join(student_folder, f'course_{course_id}')
-        os.makedirs(course_folder, exist_ok=True)
-
-        # Set the file location inside the course folder
-        file_location = os.path.join(course_folder, uploaded_file.name)
-        file_extension = os.path.splitext(file_location)[-1].lower()
-
-        if file_extension == '.py':
-            # Handle Python script execution
-            result = data(uploaded_file, student_instance, uploaded_file.name, file_location, description, 'python')
-
-        elif file_extension == '.c':
-            # Handle C code compilation and execution
-            result = data(uploaded_file, student_instance, uploaded_file.name, file_location, description, 'c')
-
-            if 'error' in result:
-                return Response({'error': result['error']}, status=status.HTTP_400_BAD_REQUEST)
-
-        else:
-            return Response({'error': 'Invalid file type'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Save the uploaded file to the specified location
-        with open(file_location, 'wb+') as file:
-            for chunk in uploaded_file.chunks():
-                file.write(chunk)
-
-        return Response(result, status=status.HTTP_200_OK)
-
-    return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
 '''
 
 
-
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def get_prof_overview(request):
     return Response()
 
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def get_prof_profile(request, id):
     try:
         profile = Professor.objects.get(id=id)
         serializer = ProfessorSerializer(profile)
-        return Response(serializer.data)
+        return Response(serializer.data , status=status.HTTP_200_OK)
     except Professor.DoesNotExist:
-        return ProfessorSerializer({'error': 'Professor not found'}, status=404)
+        return ProfessorSerializer({'error': 'Professor not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
-def get_list_results(request):
-    return Response()
+@permission_classes([AllowAny])
+def get_course_list(request, id):
+    # Implement the logic for fetching the list of courses for a specific professor
+    try:
+        professor = Professor.objects.get(professor_id=id)
+        courses = professor.courses.all()
+        serializer = CourseSerializer(courses, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Professor.DoesNotExist:
+        return Response({"error": "Professor not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_pending_upload(request, id):
+    # Implement the logic for fetching pending code uploads for a specific professor
+    try:
+        # Fetch codes associated with the professor ID
+        pending_codes = Code.objects.filter(course__professor__professor_id=id)
+
+        # Serialize the data
+        serializer = CodeSerializer(pending_codes, many=True)
+
+        # Return the serialized data in the response
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Code.DoesNotExist:
+        return Response({"error": "No pending uploads found for the professor"}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def upload_file(request, course_id, assignment_id):
-    if request.method == 'POST':
-        user = request.user
-        student_instance = get_object_or_404(Student, username=user)
-        student_name = student_instance.student_name
-        uploaded_file = request.FILES.get('file')
-        description = request.POST.get('description', '')
+@permission_classes([AllowAny])
+def upload_testcase(request):
+    # Implement the logic for uploading a new test case
+    prof_id = request.data.get('prof_id')
+    course_id = request.data.get('course_id')
+    assign_no = request.data.get('assign_no')
+    input_output_pairs = request.data.get('input_output_pairs', [])
+    try:
+        course = Course.objects.get(pk=course_id)  # retrieve the course
+    except Course.DoesNotExist:
+        return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        if not uploaded_file:
-            return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
-
-        BASE_DIR = Path(__file__).resolve().parent
-        student_folder = os.path.join(BASE_DIR, f'uploadedcode/{student_name}')
-
-        # Create the student's folder if it doesn't exist
-        os.makedirs(student_folder, exist_ok=True)
-
-        # Add the course folder inside the student's folder based on the course_id
-        course_folder = os.path.join(student_folder, f'course_{course_id}')
-        os.makedirs(course_folder, exist_ok=True)
-
-        # Add the Assignment folder inside the Course's folder based on the Assignment_id
-        assignment_folder = os.path.join(course_folder, f'assignment_{assignment_id}')
-        os.makedirs(assignment_folder, exist_ok=True)
-
-        # Set the file location inside the course folder
-        file_location = os.path.join(assignment_folder, uploaded_file.name)
-        file_extension = os.path.splitext(file_location)[-1].lower()
-
-        if file_extension == '.py':
-            # Handle Python script execution
-            result = data(uploaded_file, student_instance, uploaded_file.name, file_location, description, 'python')
-
-        elif file_extension == '.c':
-            # Handle C code compilation and execution
-            result = data(uploaded_file, student_instance, uploaded_file.name, file_location, description, 'c')
-
-            if 'error' in result:
-                return Response({'error': result['error']}, status=status.HTTP_400_BAD_REQUEST)
-
+    test_cases = []
+    for pair in input_output_pairs:
+        test_case_data = {
+            'professor_id': prof_id,
+            'course_id': course_id,
+            'assignment_no': assign_no,
+            'input_data': pair['input'],
+            'output_data': pair['output']
+        }
+        serializer = TestCaseSerializer(data=test_case_data)
+        if serializer.is_valid():
+            serializer.save()
+            test_cases.append(serializer.data)
         else:
-            return Response({'error': 'Invalid file type'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # Save the uploaded file to the specified location
-        with open(file_location, 'wb+') as file:
-            for chunk in uploaded_file.chunks():
-                file.write(chunk)
-
-        return Response(result, status=status.HTTP_200_OK)
-
-    return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    return Response(test_cases, status=status.HTTP_201_CREATED)

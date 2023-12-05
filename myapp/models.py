@@ -23,8 +23,6 @@ class Course(models.Model):
 class Professor(User):
     professor_id = models.AutoField(primary_key=True)
     professor_name = models.CharField(max_length=255)
-    #email = models.EmailField(unique=True)
-    #password = models.CharField(max_length=255)
     courses = models.ManyToManyField(Course)
 
     def __str__(self):
@@ -60,6 +58,7 @@ class Code(models.Model):
 class TestCase(models.Model):
     assignment_no = models.PositiveIntegerField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
     input_data = models.TextField()
     output_data = models.TextField()
     problem_details = models.TextField()

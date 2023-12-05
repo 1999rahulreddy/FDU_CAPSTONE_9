@@ -1,4 +1,6 @@
 from django.urls import path
+from rest_framework.authtoken.views import obtain_auth_token
+
 from .views import *
 from . import views
 from .views import RegistrationAPIView, ChangePasswordView, LoginAPIView
@@ -30,8 +32,10 @@ urlpatterns = [
 
     path('api/Professor_course_list/<int:professor_id>/', ProfessorCoursesView.as_view(), name='course_professors'),
 
-    path('prof/overview/', views.get_prof_overview, name='api-prof-overview'),
-    path('prof/profile/<int:id>', views.get_prof_profile, name='api-prof-profile'),
-    path('prof/listresults/', views.get_list_results, name='api-list-results'),
-
+    path('api/prof/overview/', views.get_prof_overview, name='api-prof-overview'),
+    path('api/prof/profile/<int:id>', views.get_prof_profile, name='api-prof-profile'),
+    path('api/prof/get_course_list/<int:id>', views.get_course_list, name='api-course-list'),
+    path('api/prof/get_pending_upload/<int:id>', views.get_pending_upload, name='api-pending-upload'),
+    path('api/prof/upload_testcase/', views.upload_testcase, name='api-upload-testcase'),
+    # path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
 ]

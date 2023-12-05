@@ -58,9 +58,13 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
             return current_user
 
 class TestCaseSerializer(serializers.ModelSerializer):
+    course_id = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all(), source='course', write_only=True)
+    professor_id = serializers.PrimaryKeyRelatedField(queryset=Professor.objects.all(), source='professor',
+                                                      write_only=True)
+
     class Meta:
         model = TestCase
-        fields = ['assignment_no', 'course', 'input_data', 'output_data', 'problem_details']
+        fields = ['assignment_no', 'professor_id', 'course_id', 'input_data', 'output_data']
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -95,3 +99,9 @@ class ProfessorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Professor
         fields = ['professor_id', 'professor_name', 'courses']
+
+
+class CodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Code
+        fields = ['id', 'student', 'course', 'assignment_no', 'description', 'language', 'code_file', 'due_date']
