@@ -46,19 +46,18 @@ class CourseListPage extends Component {
                     <div className="col-md-3">
                         {/* Sidebar */}
                         <div className="bg-light border-right" id="sidebar-wrapper">
-                            <div className="sidebar-heading">Student Dashboard</div>
+                            <div className="sidebar-heading">Student Courses</div>
                             <div className="list-group list-group-flush">
                                 <Link to="/dashboard" className="list-group-item list-group-item-action bg-light">Dashboard</Link>
-                                <Link to="/settings" className="list-group-item list-group-item-action bg-light">Settings</Link>
-                                <Link to="/code-assessment-history" className="list-group-item list-group-item-action bg-light">All Code Assessment History</Link>
+                                <Link to="/courses" className="list-group-item list-group-item-action bg-light">Courses</Link>
                                 <Link to="/grades" className="list-group-item list-group-item-action bg-light">Grades</Link>
-                                <Link to="/schedule" className="list-group-item list-group-item-action bg-light">My Schedule</Link>
-                                <Link to="/documents" className="list-group-item list-group-item-action bg-light">My Documents</Link>
+                                <Link to="/profile" className="list-group-item list-group-item-action bg-light">Profile</Link>
+                                <Link to="/logout" className="list-group-item list-group-item-action bg-light">Logout</Link>
                             </div>
                         </div>
                     </div>
                     <div className="col-md-9">
-                        <h1>{studentName || 'Student'}'s Dashboard</h1>
+                        <h1>{studentName || 'Student'}'s Courses</h1>
                         <table className="table">
                             <thead>
                                 <tr>

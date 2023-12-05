@@ -9,6 +9,7 @@ import CourseListPage from './views/CourseListPage/CourseListPage';
 import GradePage from './views/GradePage/GradePage';
 import StudentProfile from './views/StudentProfile/StudentProfile';
 import PasswordPage from './views/PasswordPage/PasswordPage';
+import AllGradePage from './views/AllGradePage/AllGradePage';
 
 
 
@@ -26,6 +27,7 @@ function App() {
           <Route path="/grade-page/:studentId/:courseId" component={GradePage} />
           <Route path="/profile" component={StudentProfile} /> 
           <Route path="/change-password" component={PasswordPage} />
+          <Route path="/all-grades/:studentId" component={AllGradePage} />
         </Switch>
       </div>
     </Router>

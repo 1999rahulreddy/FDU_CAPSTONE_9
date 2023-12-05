@@ -22,6 +22,7 @@ import os
 import subprocess
 import logging
 from .data import *
+from .models import Student
 
 '''
 class SignUpView(CreateView):
@@ -38,7 +39,7 @@ class UserView(APIView):
 
     def get(self, request):
         output = [{"username": output.username, "email": output.email}
-                  #for output in UserFile.objects.all()]
+                  # for output in UserFile.objects.all()]
                   for output in Code.objects.all()]
         return Response(output)
 
@@ -101,8 +102,9 @@ def upload_file(request):
 
         if file_extension == '.py':
             # Handle Python script execution
-            #user_file = UserFile(user=user, file_name=file_name,file_location=file_location, description=description)
-            user_file = Code(user=user, file_name=file_name,file_location=file_location, description=description)
+            # user_file = UserFile(user=user, file_name=file_name,file_location=file_location, description=description)
+            user_file = Code(user=user, file_name=file_name,
+                             file_location=file_location, description=description)
             user_file.save()
 
             # Save the uploaded file to the specified location
@@ -121,8 +123,9 @@ def upload_file(request):
 
         elif file_extension == '.c':
             # Handle C code compilation and execution
-            #user_file = UserFile(user=user, file_name=file_name,file_location=file_location, description=description)
-            user_file = Code(user=user, file_name=file_name,file_location=file_location, description=description)
+            # user_file = UserFile(user=user, file_name=file_name,file_location=file_location, description=description)
+            user_file = Code(user=user, file_name=file_name,
+                             file_location=file_location, description=description)
             user_file.save()
 
             # Save the uploaded C file to the specified location
@@ -184,6 +187,7 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
 
+
 def registration_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -200,10 +204,11 @@ def registration_view(request):
 
 
 class RegistrationAPIView(generics.CreateAPIView):
-    #queryset = User.objects.all()
+    # queryset = User.objects.all()
     queryset = Student.objects.all()
     permission_classes = [permissions.AllowAny]
     serializer_class = RegistrationSerializer
+
 
 class Assign_Test_Case(APIView):
     serializer_class = TestCaseSerializer
@@ -229,19 +234,19 @@ class Assign_Test_Case(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-        
-
 class ChangePasswordView(APIView):
     serializer_class = ChangePasswordSerializer
     permission_classes = (IsAuthenticated, )
 
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer = self.serializer_class(
+            data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response({'msg': 'Password changed successfully'}, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 '''
 class LoginAPIView(APIView):
@@ -276,6 +281,46 @@ class LoginAPIView(APIView):
 
 logger = logging.getLogger(__name__)
 
+
+# class LoginAPIView(APIView):
+#     serializer_class = LoginSerializer
+#     permission_classes = (AllowAny,)
+
+#     def post(self, request, *args, **kwargs):
+#         serializer = self.serializer_class(data=request.data)
+#         if serializer.is_valid():
+#             username = serializer.validated_data['username']
+#             password = serializer.validated_data['password']
+
+#             # Debugging: Print received username and password
+#             # logger.info(f"Received username: {username}")
+#             # logger.info(f"Received password: {password}")
+
+#             # hashed_password = make_password(password)
+#             # print(hashed_password)
+#             # print(check_password(password,hashed_password))
+
+#             # print(Student.objects.get_by_natural_key(username))
+
+#             # Authenticate the user
+#             user = authenticate(request, username=username, password=password)
+
+#             # Debugging: Print authenticated user
+#             # logger.info(f"Authenticated user: {user}")
+
+#             if user is not None:
+#                 login(request, user)
+
+#                 # Get or create a token for the user
+#                 token, _ = Token.objects.get_or_create(user=user)
+
+#                 # Return the token in the response
+#                 return Response({'token': token.key}, status=status.HTTP_200_OK)
+#             else:
+#                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+#         else:
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class LoginAPIView(APIView):
     serializer_class = LoginSerializer
     permission_classes = (AllowAny,)
@@ -286,22 +331,7 @@ class LoginAPIView(APIView):
             username = serializer.validated_data['username']
             password = serializer.validated_data['password']
 
-            # Debugging: Print received username and password
-            #logger.info(f"Received username: {username}")
-            #logger.info(f"Received password: {password}")
-
-            #hashed_password = make_password(password)
-            #print(hashed_password)
-            #print(check_password(password,hashed_password))
-
-
-            #print(Student.objects.get_by_natural_key(username))
-
-            # Authenticate the user
             user = authenticate(request, username=username, password=password)
-
-            # Debugging: Print authenticated user
-            #logger.info(f"Authenticated user: {user}")
 
             if user is not None:
                 login(request, user)
@@ -309,8 +339,15 @@ class LoginAPIView(APIView):
                 # Get or create a token for the user
                 token, _ = Token.objects.get_or_create(user=user)
 
-                # Return the token in the response
-                return Response({'token': token.key}, status=status.HTTP_200_OK)
+                # Fetch the student ID from myapp_student table
+                try:
+                    student = Student.objects.get(user_ptr_id=user.id)
+                    student_id = student.student_id
+                except Student.DoesNotExist:
+                    student_id = None
+
+                # Return the token and student ID in the response
+                return Response({'token': token.key, 'student_id': student_id}, status=status.HTTP_200_OK)
             else:
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
@@ -335,7 +372,6 @@ class LoginAPIView(APIView):
 #             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def upload_file(request):
@@ -343,7 +379,7 @@ def upload_file(request):
         user = request.user
         print(user)
         student_instance = get_object_or_404(Student, username=user)
-        student_name = student_instance.student_name#get username
+        student_name = student_instance.student_name  # get username
         print(student_name)
         uploaded_file = request.FILES.get('file')
         print(uploaded_file.name)
@@ -359,17 +395,19 @@ def upload_file(request):
 
         if file_extension == '.py':
             # Handle Python script execution
-            result = data(uploaded_file, student_instance, file_name, file_location, description, 'python')
-            #need to add (assignment no, course id) while user clicks on the take test button while trying to submit code
-            #and then pass to the data method where am using default values.
-            #result = data(user,uploaded_file, student_instance, file_location, description, 'python')
+            result = data(uploaded_file, student_instance,
+                          file_name, file_location, description, 'python')
+            # need to add (assignment no, course id) while user clicks on the take test button while trying to submit code
+            # and then pass to the data method where am using default values.
+            # result = data(user,uploaded_file, student_instance, file_location, description, 'python')
 
         elif file_extension == '.c':
             # Handle C code compilation and execution
-            result = data(uploaded_file, student_instance, file_name, file_location, description, 'c')
-            #need to add (assignment no, course id) while user clicks on the take test button while trying to submit code
-            #and then pass to the data method where am using default values.
-            #result = data(user,uploaded_file, student_instance, file_location, description, "c")
+            result = data(uploaded_file, student_instance,
+                          file_name, file_location, description, 'c')
+            # need to add (assignment no, course id) while user clicks on the take test button while trying to submit code
+            # and then pass to the data method where am using default values.
+            # result = data(user,uploaded_file, student_instance, file_location, description, "c")
 
             if 'error' in result:
                 return Response({'error': result['error']}, status=status.HTTP_400_BAD_REQUEST)
@@ -383,12 +421,15 @@ def upload_file(request):
 
     return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+
 class GradesView(APIView):
     serializer_class = GradesSerializer
     permission_classes = (IsAuthenticated, )
+
     def get(self, request, student_id, course_id, format=None):
         try:
-            grades = Grades.objects.filter(student_id=student_id, course_id=course_id)
+            grades = Grades.objects.filter(
+                student_id=student_id, course_id=course_id)
             print(grades)
             serializer = GradesSerializer(grades, many=True)
             print(serializer)
@@ -396,21 +437,47 @@ class GradesView(APIView):
         except Exception as e:
             return Response({'errorrr': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+class AllGradesView(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request, student_id, format=None):
+        try:
+            grades = Grades.objects.filter(
+                student_id=student_id).select_related('course')
+            grades_data = [
+                {
+                    "id": grade.id,
+                    "assignment_no": grade.assignment_no,
+                    "submission_date": grade.submission_date,
+                    "grade": grade.grade,
+                    "student": grade.student_id,
+                    "course": grade.course.course_id,
+                    "course_name": grade.course.course_name
+                }
+                for grade in grades
+            ]
+            return Response(grades_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 class StudentCoursesView(APIView):
     serializer_class = StudentSerializer
     permission_classes = (IsAuthenticated, )
-    #permission_classes = (AllowAny,)
+    # permission_classes = (AllowAny,)
+
     def get(self, request, student_id, format=None):
         try:
-            #student = Student.objects.get(student_id=student_id)
-            
-            student = Student.objects.get(student_id = student_id)
-            
-            #student = Student.objects.get(user_id=student_id)
-            #serializer = StudentSerializer(student.student.all(), many=True)
-            #serializer = StudentSerializer(student.courses.all(), many=True)
+            # student = Student.objects.get(student_id=student_id)
+
+            student = Student.objects.get(student_id=student_id)
+
+            # student = Student.objects.get(user_id=student_id)
+            # serializer = StudentSerializer(student.student.all(), many=True)
+            # serializer = StudentSerializer(student.courses.all(), many=True)
             serializer = StudentSerializer(student)
-            #serializer = CourseSerializer(student.courses.all(), many=True)
+            # serializer = CourseSerializer(student.courses.all(), many=True)
             print(serializer)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Student.DoesNotExist:
@@ -423,9 +490,10 @@ class StudentCoursesView(APIView):
 class ProfessorCoursesView(APIView):
     serializer_class = ProfessorSerializer
     permission_classes = (IsAuthenticated, )
+
     def get(self, request, professor_id, format=None):
         try:
-            professor = Professor.objects.get(professor_id = professor_id)
+            professor = Professor.objects.get(professor_id=professor_id)
             serializer = ProfessorSerializer(professor)
             print(serializer)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -434,6 +502,7 @@ class ProfessorCoursesView(APIView):
         except Exception as e:
             print(str(e))
             return Response({'errorr': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 '''
 def data(uploaded_file, user, file_name, file_location, description, language):
@@ -484,7 +553,7 @@ def get_prof_profile(request, id):
     try:
         profile = Professor.objects.get(id=id)
         serializer = ProfessorSerializer(profile)
-        return Response(serializer.data , status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     except Professor.DoesNotExist:
         return ProfessorSerializer({'error': 'Professor not found'}, status=status.HTTP_404_NOT_FOUND)
 
