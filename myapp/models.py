@@ -48,7 +48,8 @@ class Code(models.Model):
     assignment_no = models.PositiveIntegerField()
     description = models.CharField(max_length=255)
     language = models.CharField(max_length=255)
-    code_file =models.FileField(upload_to='uploadedcode/')
+    #code_file =models.FileField(upload_to='uploadedcode/')
+    code_file = models.CharField(max_length=255)
     due_date = models.DateTimeField()
 
     #file_name = models.TextField()

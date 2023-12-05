@@ -23,7 +23,7 @@ urlpatterns = [
     path('api/login/', LoginAPIView.as_view(), name='api-login'),
 
     path('api/chpasswd/', ChangePasswordView.as_view(), name='api_chpasswd'),
-    path('upload/', views.upload_file, name='upload_file'),
+    path('upload/<int:course_id>/<int:assignment_id>/', views.upload_file, name='upload_file'),
     path('signup/', views.UserView.as_view(), name='signup'),
     path('api/view_grades/<int:student_id>/<int:course_id>/', GradesView.as_view(), name='grades-api'),
     path('api/Student_course_list/<int:student_id>/', StudentCoursesView.as_view(), name='course_students'),
