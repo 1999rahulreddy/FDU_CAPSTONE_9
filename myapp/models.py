@@ -61,7 +61,8 @@ class TestCase(models.Model):
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
     input_data = models.TextField()
     output_data = models.TextField()
-    problem_details = models.TextField()
+    problem_details = models.TextField(blank=True)  # allow blank values for problem_details
+
 
     def __str__(self):
         return f"Test Case for Assignment {self.assignment_no} in {self.course.course_name}"

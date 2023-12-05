@@ -61,10 +61,12 @@ class TestCaseSerializer(serializers.ModelSerializer):
     course_id = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all(), source='course', write_only=True)
     professor_id = serializers.PrimaryKeyRelatedField(queryset=Professor.objects.all(), source='professor',
                                                       write_only=True)
+    problem_details = serializers.CharField(required=False,
+                                            allow_blank=True)  # allow optional and blank problem_details
 
     class Meta:
         model = TestCase
-        fields = ['assignment_no', 'professor_id', 'course_id', 'input_data', 'output_data']
+        fields = ['assignment_no', 'professor_id', 'course_id', 'input_data', 'output_data', 'problem_details']
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()

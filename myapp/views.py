@@ -527,10 +527,6 @@ def upload_testcase(request):
     course_id = request.data.get('course_id')
     assign_no = request.data.get('assign_no')
     input_output_pairs = request.data.get('input_output_pairs', [])
-    try:
-        course = Course.objects.get(pk=course_id)  # retrieve the course
-    except Course.DoesNotExist:
-        return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
 
     test_cases = []
     for pair in input_output_pairs:
@@ -539,7 +535,8 @@ def upload_testcase(request):
             'course_id': course_id,
             'assignment_no': assign_no,
             'input_data': pair['input'],
-            'output_data': pair['output']
+            'output_data': pair['output'],
+            'problem_details': pair.get('problem_details', '')
         }
         serializer = TestCaseSerializer(data=test_case_data)
         if serializer.is_valid():
