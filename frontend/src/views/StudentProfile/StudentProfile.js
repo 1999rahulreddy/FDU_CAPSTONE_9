@@ -5,7 +5,8 @@ import Modal from 'react-modal';
 import axios from 'axios';
 import Footer from '../../components/Footer';
 import './StudentProfile.css'; 
-import profilePic from '/Users/spock/Documents/github/capstone/Final/FDU_CAPSTONE_9/frontend/src/assets/images/profile.jpg';
+import profilePic from '../../assets/images/profile.jpg';
+
 
 Modal.setAppElement('#root'); // Assuming your root element has the id 'root'
 
