@@ -10,6 +10,7 @@ import GradePage from './views/GradePage/GradePage';
 import StudentProfile from './views/StudentProfile/StudentProfile';
 import PasswordPage from './views/PasswordPage/PasswordPage';
 import AllGradePage from './views/AllGradePage/AllGradePage';
+import AssignmentPage from './views/AssignmentPage/AssignmentPage'; 
 
 
 
@@ -21,13 +22,14 @@ function App() {
           <Route path="/" exact component={HomePage} />
           <Route path="/signup" component={SignUp} />
           <Route path="/login" component={LoginPage} />
-          <Route path="/upload" component={UploadPage} />
+          <Route path="/upload/:courseId/:assignmentId" component={UploadPage} />
           <Route path="/dashboard" component={DashBoardPage} />
-          <Route path="/courses" component={CourseListPage} /> 
+          <Route path="/courses/:studentId" component={CourseListPage} />
           <Route path="/grade-page/:studentId/:courseId" component={GradePage} />
           <Route path="/profile" component={StudentProfile} /> 
           <Route path="/change-password" component={PasswordPage} />
           <Route path="/all-grades/:studentId" component={AllGradePage} />
+          <Route path="/assignments/:courseId" component={AssignmentPage} /> 
         </Switch>
       </div>
     </Router>

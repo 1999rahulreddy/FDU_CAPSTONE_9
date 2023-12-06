@@ -48,4 +48,6 @@ urlpatterns = [
     path('api/prof/upload_testcase/',
          views.upload_testcase, name='api-upload-testcase'),
     # path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
+    path('api/assignments/<int:course_id>/',
+         AssignmentsView.as_view(), name='assignments-list'),
 ]

@@ -17,10 +17,11 @@ class CourseListPage extends Component {
 
     fetchCourses = async () => {
         try {
+            const studentId = localStorage.getItem('student_id');
             const headers = {
                 'Authorization': `Token ${localStorage.getItem('token')}`
             };
-            const response = await axios.get('http://127.0.0.1:8000/api/Student_course_list/1/', { headers });
+            const response = await axios.get(`http://127.0.0.1:8000/api/Student_course_list/${studentId}/`, { headers });
             this.setState({
                 studentId: response.data.student_id,
                 studentName: response.data.student_name,
@@ -34,6 +35,7 @@ class CourseListPage extends Component {
     };
 
     render() {
+        const studentId = localStorage.getItem('student_id');
         const { studentName, courses, isLoading } = this.state;
 
         if (isLoading) {
@@ -48,11 +50,11 @@ class CourseListPage extends Component {
                         <div className="bg-light border-right" id="sidebar-wrapper">
                             <div className="sidebar-heading">Student Courses</div>
                             <div className="list-group list-group-flush">
-                                <Link to="/dashboard" className="list-group-item list-group-item-action bg-light">Dashboard</Link>
-                                <Link to="/courses" className="list-group-item list-group-item-action bg-light">Courses</Link>
-                                <Link to="/grades" className="list-group-item list-group-item-action bg-light">Grades</Link>
+                               <Link to="/dashboard" className="list-group-item list-group-item-action bg-light">Dashboard</Link>
+                                <Link to={`/courses/${localStorage.getItem('student_id')}`} className="list-group-item list-group-item-action bg-light">Courses</Link>
+                                <Link to={`/all-grades/${studentId}`} className="list-group-item list-group-item-action bg-light">Grades</Link>
                                 <Link to="/profile" className="list-group-item list-group-item-action bg-light">Profile</Link>
-                                <Link to="/logout" className="list-group-item list-group-item-action bg-light">Logout</Link>
+                                <Link to="/" className="list-group-item list-group-item-action bg-light">Logout </Link>
                             </div>
                         </div>
                     </div>
@@ -77,9 +79,7 @@ class CourseListPage extends Component {
                                             <Link to={`/grade-page/${this.state.studentId}/${course.course_id}`}>Grade</Link>
                                         </td>
                                         <td>
-                                            {course.hasNewAssessment
-                                                ? <Link to={`/take-test/${course.course_id}`}>Take Test</Link>
-                                                : 'No'}
+                                            <Link to={`/assignments/${course.course_id}`}>Take the Test</Link>
                                         </td>
                                     </tr>
                                 ))}
