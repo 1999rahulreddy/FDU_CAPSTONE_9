@@ -6,6 +6,8 @@ class AllGradesPage extends Component {
     state = {
         grades: [],
         isLoading: true,
+        currentPage: 1,
+        rowsPerPage: 10
     };
 
     componentDidMount() {
@@ -33,30 +35,42 @@ class AllGradesPage extends Component {
         }
     };
 
+    changePage = (page) => {
+        this.setState({ currentPage: page });
+    }
+
     render() {
-        const { grades, isLoading } = this.state;
+        const studentId = localStorage.getItem('student_id');
+        const { grades, isLoading, currentPage, rowsPerPage} = this.state;
+
+        const indexOfLastRow = currentPage * rowsPerPage;
+        const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+        const currentRows = grades.slice(indexOfFirstRow, indexOfLastRow);
+
+        const totalPages = Math.ceil(grades.length / rowsPerPage);
 
         if (isLoading) {
             return <div>Loading grades...</div>;
         }
 
-        return (
+       return (
             <div className="container mt-5">
                 <div className="row">
                     <div className="col-md-3">
+                        {/* Sidebar */}
                         <div className="bg-light border-right" id="sidebar-wrapper">
                             <div className="sidebar-heading">Student Dashboard</div>
                             <div className="list-group list-group-flush">
-                                <Link to="/dashboard" className="list-group-item list-group-item-action bg-light">Dashboard</Link>
-                                <Link to="/settings" className="list-group-item list-group-item-action bg-light">Settings</Link>
-                                <Link to="/code-assessment-history" className="list-group-item list-group-item-action bg-light">All Code Assessment History</Link>
-                                <Link to="/grades" className="list-group-item list-group-item-action bg-light">Grades</Link>
-                                <Link to="/schedule" className="list-group-item list-group-item-action bg-light">My Schedule</Link>
-                                <Link to="/documents" className="list-group-item list-group-item-action bg-light">My Documents</Link>
+                                 <Link to="/dashboard" className="list-group-item list-group-item-action bg-light">Dashboard</Link>
+                    <Link to={`/courses/${studentId}`} className="list-group-item list-group-item-action bg-light">Courses</Link>
+                    <Link to={`/all-grades/${studentId}`} className="list-group-item list-group-item-action bg-light">Grades</Link>
+                    <Link to="/profile" className="list-group-item list-group-item-action bg-light">Profile</Link>
+                    <Link to="/" className="list-group-item list-group-item-action bg-light">Logout </Link>
                             </div>
                         </div>
                     </div>
                     <div className="col-md-9">
+                        {/* Grades Table */}
                         <h1>All Grades</h1>
                         <table className="table">
                             <thead>
@@ -64,13 +78,13 @@ class AllGradesPage extends Component {
                                     <th>Course Name</th>
                                     <th>Submission Date</th>
                                     <th>Grade</th>
-                                    <th>Assignment No</th> {/* New column for Course Name */}
+                                    <th>Assignment No</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {grades.map((grade, index) => (
+                                {currentRows.map((grade, index) => (
                                     <tr key={index}>
-                                        <td>{grade.course_name}</td> {/* Displaying Course Name */}
+                                        <td>{grade.course_name}</td>
                                         <td>{grade.submission_date}</td>
                                         <td>{grade.grade}</td>
                                         <td>{grade.assignment_no}</td>
@@ -78,6 +92,18 @@ class AllGradesPage extends Component {
                                 ))}
                             </tbody>
                         </table>
+                        {/* Pagination Controls */}
+                        <div className="pagination">
+                            {[...Array(totalPages)].map((_, index) => (
+                                <button
+                                    key={index + 1}
+                                    onClick={() => this.changePage(index + 1)}
+                                    className={currentPage === index + 1 ? 'active' : ''}
+                                >
+                                    {index + 1}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

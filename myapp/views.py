@@ -86,74 +86,62 @@ def upload_script(request):
     return render(request, 'upload.html')
 
 
-@login_required
-def upload_file(request):
-    user = request.user
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upload_file(request, course_id, assignment_id):
     if request.method == 'POST':
         user = request.user
-        uploaded_file = request.FILES['file']
-        BASE_DIR = Path(__file__).resolve().parent
-        file_name = uploaded_file.name
-        file_location = os.path.join(BASE_DIR, f'uploadedcode/{file_name}')
+        student_instance = get_object_or_404(Student, username=user)
+        student_name = student_instance.student_name
+        uploaded_file = request.FILES.get('file')
         description = request.POST.get('description', '')
 
-        # Check the file extension
-        file_extension = os.path.splitext(file_name)[-1].lower()
+        if not uploaded_file:
+            return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
+
+        BASE_DIR = Path(__file__).resolve().parent
+        student_folder = os.path.join(BASE_DIR, f'uploadedcode/{student_name}')
+
+        # Create the student's folder if it doesn't exist
+        os.makedirs(student_folder, exist_ok=True)
+
+        # Add the course folder inside the student's folder based on the course_id
+        course_folder = os.path.join(student_folder, f'course_{course_id}')
+        os.makedirs(course_folder, exist_ok=True)
+
+        # Add the Assignment folder inside the Course's folder based on the Assignment_id
+        assignment_folder = os.path.join(
+            course_folder, f'assignment_{assignment_id}')
+        os.makedirs(assignment_folder, exist_ok=True)
+
+        # Set the file location inside the course folder
+        file_location = os.path.join(assignment_folder, uploaded_file.name)
+        file_extension = os.path.splitext(file_location)[-1].lower()
 
         if file_extension == '.py':
             # Handle Python script execution
-            # user_file = UserFile(user=user, file_name=file_name,file_location=file_location, description=description)
-            user_file = Code(user=user, file_name=file_name,
-                             file_location=file_location, description=description)
-            user_file.save()
-
-            # Save the uploaded file to the specified location
-            with open(file_location, 'wb') as file:
-                for chunk in uploaded_file.chunks():
-                    file.write(chunk)
-
-            # Execute the Python script
-            result = subprocess.run(
-                ['python', file_location], capture_output=True, text=True)
-
-            # Access the script output using 'result.stdout'
-            script_output = result.stdout
-
-            return render(request, 'output.html', {'output': script_output})
+            result = data(uploaded_file, student_instance,
+                          uploaded_file.name, file_location, description, 'python')
 
         elif file_extension == '.c':
             # Handle C code compilation and execution
-            # user_file = UserFile(user=user, file_name=file_name,file_location=file_location, description=description)
-            user_file = Code(user=user, file_name=file_name,
-                             file_location=file_location, description=description)
-            user_file.save()
+            result = data(uploaded_file, student_instance,
+                          uploaded_file.name, file_location, description, 'c')
 
-            # Save the uploaded C file to the specified location
-            with open(file_location, 'wb') as file:
-                for chunk in uploaded_file.chunks():
-                    file.write(chunk)
+            if 'error' in result:
+                return Response({'error': result['error']}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Compile the C code (assuming it's a single .c file)
-            compile_command = ['gcc', file_location,
-                               '-o', f'{file_name}_compiled_file']
-            compile_result = subprocess.run(
-                compile_command, capture_ouyestput=True, text=True)
+        else:
+            return Response({'error': 'Invalid file type'}, status=status.HTTP_400_BAD_REQUEST)
 
-            if compile_result.returncode == 0:
-                # Successfully compiled, execute the compiled binary
-                execute_command = [f'./{file_name}_compiled_file']
-                execution_result = subprocess.run(
-                    execute_command, capture_output=True, text=True)
+        # Save the uploaded file to the specified location
+        with open(file_location, 'wb+') as file:
+            for chunk in uploaded_file.chunks():
+                file.write(chunk)
 
-                # Access the execution output using 'execution_result.stdout'
-                script_output = execution_result.stdout
+        return Response(result, status=status.HTTP_200_OK)
 
-                return render(request, 'output.html', {'script_output': script_output})
-            else:
-                # Compilation failed
-                return render(request, 'upload.html', {'error_message': 'Compilation failed'})
-
-    return render(request, 'upload.html')
+    return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 @login_required
@@ -371,7 +359,7 @@ class LoginAPIView(APIView):
 #         else:
 #             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+'''
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def upload_file(request):
@@ -420,6 +408,7 @@ def upload_file(request):
         return Response(result, status=status.HTTP_200_OK)
 
     return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+'''
 
 
 class GradesView(APIView):
@@ -615,3 +604,18 @@ def upload_testcase(request):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     return Response(test_cases, status=status.HTTP_201_CREATED)
+
+
+class AssignmentsView(APIView):
+    serializer_class = MyAppCourseAssignmentSerializer
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request, course_id, format=None):
+        try:
+            assignments = MyAppCourseAssignment.objects.filter(
+                course_id=course_id)
+            serializer = MyAppCourseAssignmentSerializer(
+                assignments, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

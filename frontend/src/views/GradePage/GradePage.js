@@ -38,6 +38,7 @@ class GradePage extends Component {
 
     render() {
         const { grades, isLoading } = this.state;
+        const studentId = localStorage.getItem('student_id');
 
         if (isLoading) {
             return <div>Loading grades...</div>;
@@ -51,11 +52,10 @@ class GradePage extends Component {
                             <div className="sidebar-heading">Student Dashboard</div>
                             <div className="list-group list-group-flush">
                                 <Link to="/dashboard" className="list-group-item list-group-item-action bg-light">Dashboard</Link>
-                                <Link to="/settings" className="list-group-item list-group-item-action bg-light">Settings</Link>
-                                <Link to="/code-assessment-history" className="list-group-item list-group-item-action bg-light">All Code Assessment History</Link>
-                                <Link to="/grades" className="list-group-item list-group-item-action bg-light">Grades</Link>
-                                <Link to="/schedule" className="list-group-item list-group-item-action bg-light">My Schedule</Link>
-                                <Link to="/documents" className="list-group-item list-group-item-action bg-light">My Documents</Link>
+                    <Link to={`/courses/${studentId}`} className="list-group-item list-group-item-action bg-light">Courses</Link>
+                    <Link to={`/all-grades/${studentId}`} className="list-group-item list-group-item-action bg-light">Grades</Link>
+                    <Link to="/profile" className="list-group-item list-group-item-action bg-light">Profile</Link>
+                    <Link to="/" className="list-group-item list-group-item-action bg-light">Logout </Link>
                             </div>
                         </div>
                     </div>

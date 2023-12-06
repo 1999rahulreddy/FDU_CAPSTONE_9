@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, User
-#from django.contrib.auth.models import User
-
+# from django.contrib.auth.models import User
 
 
 '''
@@ -13,12 +12,14 @@ class UserFile(models.Model):
     description = models.TextField(blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)'''
 
+
 class Course(models.Model):
     course_id = models.AutoField(primary_key=True)
     course_name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.course_name
+
 
 class Professor(User):
     professor_id = models.AutoField(primary_key=True)
@@ -28,17 +29,19 @@ class Professor(User):
     def __str__(self):
         return self.professor_name
 
+
 class Student(User):
     student_id = models.AutoField(primary_key=True)
     student_name = models.CharField(max_length=255)
-    #username = models.EmailField(unique=True)
-    #password = models.CharField(max_length=255)
+    # username = models.EmailField(unique=True)
+    # password = models.CharField(max_length=255)
     courses = models.ManyToManyField(Course)
 
-    #USERNAME_FIELD = 'user_id'
+    # USERNAME_FIELD = 'user_id'
 
     def __str__(self):
         return self.student_name
+
 
 class Code(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -46,34 +49,47 @@ class Code(models.Model):
     assignment_no = models.PositiveIntegerField()
     description = models.CharField(max_length=255)
     language = models.CharField(max_length=255)
-    #code_file =models.FileField(upload_to='uploadedcode/')
+    # code_file =models.FileField(upload_to='uploadedcode/')
     code_file = models.CharField(max_length=255)
     due_date = models.DateTimeField()
 
-    #file_name = models.TextField()
+    # file_name = models.TextField()
 
     def __str__(self):
         return f"{self.student.student_name}'s Code for Assignment {self.assignment_no} in {self.course.course_name}"
 
+
 class TestCase(models.Model):
     assignment_no = models.PositiveIntegerField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
+    professor = models.ForeignKey(
+        Professor, on_delete=models.CASCADE, null=True)
     input_data = models.TextField()
     output_data = models.TextField()
-    problem_details = models.TextField(blank=True)  # allow blank values for problem_details
-
+    # allow blank values for problem_details
+    problem_details = models.TextField(blank=True)
 
     def __str__(self):
         return f"Test Case for Assignment {self.assignment_no} in {self.course.course_name}"
-    
+
+
 class Grades(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     assignment_no = models.PositiveIntegerField()
     submission_date = models.DateTimeField(auto_now_add=True)
-    #code = models.ForeignKey(Code, on_delete=models.CASCADE)
+    # code = models.ForeignKey(Code, on_delete=models.CASCADE)
     grade = models.FloatField()
 
     def __str__(self):
         return f"Grades for Assignment {self.assignment_no} in {self.course.course_name} for {self.student.username}"
+
+
+class MyAppCourseAssignment(models.Model):
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, db_column='course_id')
+    assignment = models.ForeignKey(
+        Code, on_delete=models.CASCADE, db_column='assignment_id')
+
+    def __str__(self):
+        return f"Course ID {self.course.course_id} Assignment {self.assignment.assignment_no}"

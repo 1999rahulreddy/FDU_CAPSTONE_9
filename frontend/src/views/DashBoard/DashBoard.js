@@ -6,14 +6,16 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 
 class Sidebar extends Component {
     render() {
+      const studentId = localStorage.getItem('student_id');
+
         return (
             <div className="bg-light border-right" id="sidebar-wrapper">
                 <div className="sidebar-heading">Student Dashboard</div>
                 <div className="list-group list-group-flush">
                     <Link to="/dashboard" className="list-group-item list-group-item-action bg-light">Dashboard</Link>
-                    <Link to="/courses" className="list-group-item list-group-item-action bg-light">Courses</Link>
-                    <Link to="/grades" className="list-group-item list-group-item-action bg-light">Grades</Link>
-                    <Link to="/schedule" className="list-group-item list-group-item-action bg-light">Profile</Link>
+                    <Link to={`/courses/${studentId}`} className="list-group-item list-group-item-action bg-light">Courses</Link>
+                    <Link to={`/all-grades/${studentId}`} className="list-group-item list-group-item-action bg-light">Grades</Link>
+                    <Link to="/profile" className="list-group-item list-group-item-action bg-light">Profile</Link>
                     <Link to="/" className="list-group-item list-group-item-action bg-light">Logout </Link>
                 </div>
             </div>

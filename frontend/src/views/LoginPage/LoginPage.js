@@ -26,6 +26,8 @@ class Login extends Component {
 
       // 存储 token
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('student_id', response.data.student_id);
+      localStorage.setItem('username', this.state.username);
       
       // 使用 this.props.history 替代 useHistory
       this.props.history.push('/dashboard');

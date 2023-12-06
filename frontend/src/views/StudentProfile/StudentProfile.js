@@ -105,7 +105,8 @@ class StudentProfile extends Component {
                     isOpen={this.state.isModalOpen}
                     onRequestClose={this.closeModal}
                     contentLabel="Change Password Modal"
-                >
+                >ls
+                
                     <h2>Change Password</h2>
                     <form onSubmit={this.handleSubmit}>
                         <input

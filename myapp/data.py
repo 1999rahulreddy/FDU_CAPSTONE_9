@@ -19,12 +19,15 @@ def data(uploaded_file, user, file_name, file_location, description, language):
     if language == 'python':
 
         results = []
+        ou = []
         for idx, case in enumerate(test_cases):
             input_data = ' '.join(map(str, case))
             #result = subprocess.run(['/Users/rahul/miniconda3/envs/cap3_8/bin/python', file_location], input='1 2 3', capture_output=True, text=True, shell=True)
             #result = subprocess.run(['python', file_location, '1','2','3'], stdout=subprocess.PIPE, text=True)
             result = subprocess.run(['python', file_location] + [str(arg) for arg in case], stdout=subprocess.PIPE, text=True)        
             output = result.stdout.strip()
+            #print("\n\n\n"+output)
+            ou.append(output)
 
             # Check if the output matches the expected output
             if (output) == expected_output[idx]:
@@ -40,6 +43,8 @@ def data(uploaded_file, user, file_name, file_location, description, language):
         result = {
             "test_cases": [f"Testcase{idx+1}: {' '.join(map(str, case))}" for idx, case in enumerate(test_cases)],
             "results": results,
+            "expected output": expected_output,
+            "Real output": ou,
             "score": score
         }
 
@@ -52,12 +57,15 @@ def data(uploaded_file, user, file_name, file_location, description, language):
             # Successfully compiled, execute the compiled binary
 
             results = []
+            ou = []
             for idx, case in enumerate(test_cases):
                 input_data = ' '.join(map(str, case))
                 execute_command = [f'{file_location}_compiled_file']
 
                 execution_result = subprocess.run(execute_command + [str(arg) for arg in case], stdout=subprocess.PIPE, text=True)
                 output = execution_result.stdout.strip()
+                #print("\n\n\n"+output)
+                ou.append(output)
 
                 # Check if the output matches the expected output
                 if int(output) == expected_output[idx]:
@@ -72,6 +80,8 @@ def data(uploaded_file, user, file_name, file_location, description, language):
             result = {
                 "test_cases": [f"Testcase{idx+1}: {' '.join(map(str, case))}" for idx, case in enumerate(test_cases)],
                 "results": results,
+                "expected output": expected_output,
+                "Real output": ou,
                 "score": score
             }
 

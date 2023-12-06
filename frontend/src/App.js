@@ -14,6 +14,8 @@ import TeacherDashBoard from './views/TeacherDashBoard/TeacherDashBoard';
 import TeacherProfile from './views/TeacherProfile/TeacherProfile';
 import Teacherevoluations from './views/Teacherevoluations/Teacherevoluations';
 import TeacherListallcodes from './views/TeacherListallcodes/TeacherListallcodes';
+import AssignmentPage from './views/AssignmentPage/AssignmentPage'; 
+
 
 
 
@@ -25,9 +27,9 @@ function App() {
           <Route path="/" exact component={HomePage} />
           <Route path="/signup" component={SignUp} />
           <Route path="/login" component={LoginPage} />
-          <Route path="/upload" component={UploadPage} />
+          <Route path="/upload/:courseId/:assignmentId" component={UploadPage} />
           <Route path="/dashboard" component={DashBoardPage} />
-          <Route path="/courses" component={CourseListPage} /> 
+          <Route path="/courses/:studentId" component={CourseListPage} />
           <Route path="/grade-page/:studentId/:courseId" component={GradePage} />
           <Route path="/profile" component={StudentProfile} /> 
           <Route path="/change-password" component={PasswordPage} />
@@ -36,6 +38,7 @@ function App() {
           <Route path="/teacherprofile" component={TeacherProfile} />
           <Route path="/Teacherevoluations" component={Teacherevoluations} />
           <Route path="/TeacherListallcodes" component={TeacherListallcodes} />
+          <Route path="/assignments/:courseId" component={AssignmentPage} /> 
         </Switch>
       </div>
     </Router>

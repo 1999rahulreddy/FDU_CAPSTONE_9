@@ -1,13 +1,15 @@
 from rest_framework import serializers
 from django.contrib.auth.models import *
 from rest_framework.serializers import Serializer
-#from .models import Professor, Student, TestCase
+# from .models import Professor, Student, TestCase
 from .models import *
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = ('student_id', 'student_name', 'email', 'password', 'courses')
+
 
 class RegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(
@@ -34,6 +36,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+
 class ChangePasswordSerializer(serializers.ModelSerializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
@@ -49,16 +52,20 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         new_password = self.validated_data['new_password']
         confirm_new_password = self.validated_data['confirm_new_password']
         if not current_user.check_password(old_password):
-            raise serializers.ValidationError({"old_password": "Old Password is incorrect."})
+            raise serializers.ValidationError(
+                {"old_password": "Old Password is incorrect."})
         elif new_password != confirm_new_password:
-            raise serializers.ValidationError({"new_password": "New passwords do not match."})
+            raise serializers.ValidationError(
+                {"new_password": "New passwords do not match."})
         else:
             current_user.set_password(new_password)
             current_user.save()
             return current_user
 
+
 class TestCaseSerializer(serializers.ModelSerializer):
-    course_id = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all(), source='course', write_only=True)
+    course_id = serializers.PrimaryKeyRelatedField(
+        queryset=Course.objects.all(), source='course', write_only=True)
     professor_id = serializers.PrimaryKeyRelatedField(queryset=Professor.objects.all(), source='professor',
                                                       write_only=True)
     problem_details = serializers.CharField(required=False,
@@ -66,15 +73,19 @@ class TestCaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TestCase
-        fields = ['assignment_no', 'professor_id', 'course_id', 'input_data', 'output_data', 'problem_details']
+        fields = ['assignment_no', 'professor_id', 'course_id',
+                  'input_data', 'output_data', 'problem_details']
+
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
+
 class FileUploadSerializer(serializers.Serializer):
     file = serializers.FileField()
     description = serializers.CharField(required=False, allow_blank=True)
+
 
 class GradesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -83,21 +94,25 @@ class GradesSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    #students = StudentSerializer(many=True, read_only=True)
+    # students = StudentSerializer(many=True, read_only=True)
     class Meta:
         model = Course
         fields = ['course_id', 'course_name']
 
+
 class StudentSerializer(serializers.ModelSerializer):
     courses = CourseSerializer(many=True, read_only=True)
-    #student = UserSerializer(many=True, read_only=True)
+    # student = UserSerializer(many=True, read_only=True)
+
     class Meta:
         model = Student
         fields = ['student_id', 'student_name', 'courses']
 
+
 class ProfessorSerializer(serializers.ModelSerializer):
     courses = CourseSerializer(many=True, read_only=True)
-    #student = UserSerializer(many=True, read_only=True)
+    # student = UserSerializer(many=True, read_only=True)
+
     class Meta:
         model = Professor
         fields = ['professor_id', 'professor_name', 'courses']
@@ -106,4 +121,11 @@ class ProfessorSerializer(serializers.ModelSerializer):
 class CodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Code
-        fields = ['id', 'student', 'course', 'assignment_no', 'description', 'language', 'code_file', 'due_date']
+        fields = ['id', 'student', 'course', 'assignment_no',
+                  'description', 'language', 'code_file', 'due_date']
+
+
+class MyAppCourseAssignmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MyAppCourseAssignment
+        fields = ['assignment_id']
