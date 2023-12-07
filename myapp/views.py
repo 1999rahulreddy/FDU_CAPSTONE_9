@@ -110,7 +110,8 @@ def upload_file(request, course_id, assignment_id):
         os.makedirs(course_folder, exist_ok=True)
 
         # Add the Assignment folder inside the Course's folder based on the Assignment_id
-        assignment_folder = os.path.join(course_folder, f'assignment_{assignment_id}')
+        assignment_folder = os.path.join(
+            course_folder, f'assignment_{assignment_id}')
         os.makedirs(assignment_folder, exist_ok=True)
 
         # Set the file location inside the course folder
@@ -119,14 +120,16 @@ def upload_file(request, course_id, assignment_id):
 
         if file_extension == '.py':
             # Handle Python script execution
-            result = data(uploaded_file, student_instance, uploaded_file.name, file_location, description, 'python', course_id, assignment_id)
+            result = data(uploaded_file, student_instance, uploaded_file.name,
+                          file_location, description, 'python', course_id, assignment_id)
 
-            #print("\n\n\n"+ course_id + "  " + assignment_id)
-            #print(f'\n\n\n\n{course_id} {assignment_id} \n\n\n')
+            # print("\n\n\n"+ course_id + "  " + assignment_id)
+            # print(f'\n\n\n\n{course_id} {assignment_id} \n\n\n')
 
         elif file_extension == '.c':
             # Handle C code compilation and execution
-            result = data(uploaded_file, student_instance, uploaded_file.name, file_location, description, 'c', course_id, assignment_id)
+            result = data(uploaded_file, student_instance, uploaded_file.name,
+                          file_location, description, 'c', course_id, assignment_id)
 
             if 'error' in result:
                 return Response({'error': result['error']}, status=status.HTTP_400_BAD_REQUEST)
@@ -410,6 +413,7 @@ def upload_file(request):
     return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 '''
 
+
 class GradesView(APIView):
     serializer_class = GradesSerializer
     permission_classes = (IsAuthenticated, )
@@ -562,15 +566,9 @@ def get_course_list(request, id):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_pending_upload(request, id):
-    # Implement the logic for fetching pending code uploads for a specific professor
     try:
-        # Fetch codes associated with the professor ID
         pending_codes = Code.objects.filter(course__professor__professor_id=id)
-
-        # Serialize the data
         serializer = CodeSerializer(pending_codes, many=True)
-
-        # Return the serialized data in the response
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Code.DoesNotExist:
         return Response({"error": "No pending uploads found for the professor"}, status=status.HTTP_404_NOT_FOUND)
@@ -604,8 +602,8 @@ def upload_testcase(request):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    
     return Response(test_cases, status=status.HTTP_201_CREATED)
+
 
 class AssignmentsView(APIView):
     serializer_class = MyAppCourseAssignmentSerializer

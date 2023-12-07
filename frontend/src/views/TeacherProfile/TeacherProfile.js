@@ -3,8 +3,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import './TeacherProfile.css'; // 引入样式文件
-import Footer from '../../components/Footer';
-import * as echarts from 'echarts';
 import teacherprofilePic from '../../assets/images/teacher.jpeg';
 
 class Sidebar extends Component {
@@ -31,8 +29,6 @@ class TeacherProfile extends Component {
         teacherProfile: {
             imageUrl: teacherprofilePic,
             name: 'James Jones ',
-            age: 40,
-            profession: 'Software Developer'
         },
         currentPage: 1
     };
@@ -61,8 +57,6 @@ class TeacherProfile extends Component {
                             </div>
                             <div className="right-section">
                                 <p><strong>Name:</strong> {teacherProfile.name}</p>
-                                <p><strong>Age:</strong> {teacherProfile.age}</p>
-                                <p><strong>Profession:</strong> {teacherProfile.profession}</p>
                             </div>
                         </div>
 
