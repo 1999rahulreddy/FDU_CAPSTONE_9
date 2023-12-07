@@ -13,7 +13,7 @@ class Sidebar extends Component {
                 <div className="list-group list-group-flush">
                     <Link to="/dashboard" className="list-group-item list-group-item-action bg-light">Dashboard</Link>            
                     <Link to="/TeacherProfile" className="list-group-item list-group-item-action bg-light">Profile</Link>
-                    <Link to="/Teacherevoluations" className="list-group-item list-group-item-action bg-light">Evaluation</Link>
+                    <Link to="/Teacherevoluations" className="list-group-item list-group-item-action bg-light">Records</Link>
                     <Link to="/TeacherListallcodes" className="list-group-item list-group-item-action bg-light">Classes</Link>
                     <Link to="/logout" className="list-group-item list-group-item-action bg-light">Logout     </Link>
                 </div>
@@ -75,12 +75,12 @@ class TeacherDashBoard extends Component {
                 type: 'pie',
                 data: [
                   {
-                    value: 111,
-                    name: 'acpet'
+                    value: 250,
+                    name: 'Pass'
                   },
                   {
-                    value: 222,
-                    name: 'reject'
+                    value: 5,
+                    name: 'Fail'
                   },
                   
                 ]
@@ -123,12 +123,12 @@ class TeacherDashBoard extends Component {
                                
                                 <th>Total code resceived </th>
                                 <th>Total evaluated codes </th>
-                                <th>accept / reject </th>
+                                <th>Pass / Total </th>
                             </tr>
                             <tr>
-                                <td><a href="https://example.com/target1">100</a></td>
-                                <td><a href="https://example.com/target1">2323</a></td>
-                                <td><a href="https://example.com/target1">100/200</a></td>
+                                <td><a href="https://example.com/target1">300</a></td>
+                                <td><a href="https://example.com/target1">255</a></td>
+                                <td><a href="https://example.com/target1">250/255</a></td>
                             </tr>
                         </thead>
                         </table>

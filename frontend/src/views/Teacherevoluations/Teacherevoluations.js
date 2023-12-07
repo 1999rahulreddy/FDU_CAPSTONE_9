@@ -7,6 +7,8 @@ class TeacherEvaluations extends Component {
         evaluations: [],
         isLoading: true,
         teacherId: 1, // Update with the correct logic to get teacher's ID
+        currentPage: 1,
+        recordsPerPage: 10,
     };
 
     componentDidMount() {
@@ -28,12 +30,25 @@ class TeacherEvaluations extends Component {
             this.setState({ isLoading: false });
         }
     };
+    
+    paginate = (pageNumber) => {
+        this.setState({ currentPage: pageNumber });
+    }
 
     render() {
-        const { evaluations, isLoading } = this.state;
+        const { evaluations, isLoading, currentPage, recordsPerPage } = this.state;
 
         if (isLoading) {
             return <div>Loading evaluations...</div>;
+        }
+
+        const indexOfLastRecord = currentPage * recordsPerPage;
+        const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+        const currentEvaluations = evaluations.slice(indexOfFirstRecord, indexOfLastRecord);
+
+        const pageNumbers = [];
+        for (let i = 1; i <= Math.ceil(evaluations.length / recordsPerPage); i++) {
+            pageNumbers.push(i);
         }
 
         return (
@@ -46,14 +61,14 @@ class TeacherEvaluations extends Component {
                             <div className="list-group list-group-flush">
                                 <Link to="/dashboard" className="list-group-item list-group-item-action bg-light">Dashboard</Link>            
                                 <Link to="/TeacherProfile" className="list-group-item list-group-item-action bg-light">Profile</Link>
-                                <Link to="/Teacherevoluations" className="list-group-item list-group-item-action bg-light">Evaluation</Link>
+                                <Link to="/Teacherevoluations" className="list-group-item list-group-item-action bg-light">Records</Link>
                                 <Link to="/TeacherListallcodes" className="list-group-item list-group-item-action bg-light">Classes</Link>
                                 <Link to="/logout" className="list-group-item list-group-item-action bg-light">Logout</Link>
                             </div>
                         </div>
                     </div>
                     <div className="col-md-9">
-                        <h1>Evaluations</h1>
+                        <h1>Records</h1>
                         <table className="table">
                             <thead>
                                 <tr>
@@ -65,7 +80,7 @@ class TeacherEvaluations extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {evaluations.map((evaluation, index) => (
+                                {currentEvaluations.map((evaluation, index) => (
                                     <tr key={index}>
                                         <td>{evaluation.course_detail.course_name}</td>
                                         <td>{evaluation.assignment_no}</td>
@@ -80,6 +95,18 @@ class TeacherEvaluations extends Component {
                                 ))}
                             </tbody>
                         </table>
+                        {/* Pagination Controls */}
+                        <nav>
+                            <ul className='pagination'>
+                                {pageNumbers.map(number => (
+                                    <li key={number} className='page-item'>
+                                        <a onClick={() => this.paginate(number)} href='#!' className='page-link'>
+                                            {number}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>

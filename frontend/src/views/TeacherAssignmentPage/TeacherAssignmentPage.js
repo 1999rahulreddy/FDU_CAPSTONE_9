@@ -48,7 +48,7 @@ class TeacherAssignmentPage extends Component {
                             <div className="list-group list-group-flush">
                                 <Link to="/dashboard" className="list-group-item list-group-item-action bg-light">Dashboard</Link>            
                                 <Link to="/TeacherProfile" className="list-group-item list-group-item-action bg-light">Profile</Link>
-                                <Link to="/Teacherevoluations" className="list-group-item list-group-item-action bg-light">Evaluation</Link>
+                                <Link to="/Teacherevoluations" className="list-group-item list-group-item-action bg-light">Records</Link>
                                 <Link to="/TeacherListallcodes" className="list-group-item list-group-item-action bg-light">Classes</Link>
                                 <Link to="/logout" className="list-group-item list-group-item-action bg-light">Logout     </Link>
                             </div>
