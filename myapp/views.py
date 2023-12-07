@@ -120,13 +120,16 @@ def upload_file(request, course_id, assignment_id):
 
         if file_extension == '.py':
             # Handle Python script execution
-            result = data(uploaded_file, student_instance,
-                          uploaded_file.name, file_location, description, 'python')
+            result = data(uploaded_file, student_instance, uploaded_file.name,
+                          file_location, description, 'python', course_id, assignment_id)
+
+            # print("\n\n\n"+ course_id + "  " + assignment_id)
+            # print(f'\n\n\n\n{course_id} {assignment_id} \n\n\n')
 
         elif file_extension == '.c':
             # Handle C code compilation and execution
-            result = data(uploaded_file, student_instance,
-                          uploaded_file.name, file_location, description, 'c')
+            result = data(uploaded_file, student_instance, uploaded_file.name,
+                          file_location, description, 'c', course_id, assignment_id)
 
             if 'error' in result:
                 return Response({'error': result['error']}, status=status.HTTP_400_BAD_REQUEST)
@@ -563,15 +566,9 @@ def get_course_list(request, id):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_pending_upload(request, id):
-    # Implement the logic for fetching pending code uploads for a specific professor
     try:
-        # Fetch codes associated with the professor ID
         pending_codes = Code.objects.filter(course__professor__professor_id=id)
-
-        # Serialize the data
         serializer = CodeSerializer(pending_codes, many=True)
-
-        # Return the serialized data in the response
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Code.DoesNotExist:
         return Response({"error": "No pending uploads found for the professor"}, status=status.HTTP_404_NOT_FOUND)
@@ -587,6 +584,8 @@ def upload_testcase(request):
     input_output_pairs = request.data.get('input_output_pairs', [])
 
     test_cases = []
+
+    print(input_output_pairs)
     for pair in input_output_pairs:
         test_case_data = {
             'professor_id': prof_id,

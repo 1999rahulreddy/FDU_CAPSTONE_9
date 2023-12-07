@@ -5,24 +5,23 @@ import Modal from 'react-modal';
 import axios from 'axios';
 import Footer from '../../components/Footer';
 import './StudentProfile.css'; 
-//import profilePic from '/Users/spock/Documents/github/capstone/Final/FDU_CAPSTONE_9/frontend/src/assets/images/profile.jpg';
 import profilePic from '../../assets/images/profile.jpg';
+
 
 Modal.setAppElement('#root'); // Assuming your root element has the id 'root'
 
 // Sidebar component
 class Sidebar extends Component {
     render() {
-        const studentId = localStorage.getItem('student_id');
         return (
             <div className="bg-light border-right" id="sidebar-wrapper">
                 <div className="sidebar-heading">Student Dashboard</div>
                 <div className="list-group list-group-flush">
                     <Link to="/dashboard" className="list-group-item list-group-item-action bg-light">Dashboard</Link>
-                    <Link to={`/courses/${studentId}`} className="list-group-item list-group-item-action bg-light">Courses</Link>
-                    <Link to={`/all-grades/${studentId}`} className="list-group-item list-group-item-action bg-light">Grades</Link>
+                    <Link to="/courses" className="list-group-item list-group-item-action bg-light">Courses</Link>
+                    <Link to="/grades" className="list-group-item list-group-item-action bg-light">Grades</Link>
                     <Link to="/profile" className="list-group-item list-group-item-action bg-light">Profile</Link>
-                    <Link to="/" className="list-group-item list-group-item-action bg-light">Logout </Link>
+                    <Link to="/" className="list-group-item list-group-item-action bg-light">Logout</Link>
                 </div>
             </div>
         );
@@ -32,8 +31,8 @@ class Sidebar extends Component {
 class StudentProfile extends Component {
     state = {
         userProfile: {
-            name: '', 
-            email: '', 
+            name: 'John Doe',
+            email: 'johndoe@example.com',
             profilePic: profilePic
         },
         isModalOpen: false,
@@ -41,17 +40,6 @@ class StudentProfile extends Component {
         newPassword: '',
         confirmNewPassword: ''
     };
-
-
-    componentDidMount() {
-        const username = localStorage.getItem('username'); 
-        this.setState(prevState => ({
-            userProfile: {
-                ...prevState.userProfile,
-                name: username || 'Default User', 
-            }
-        }));
-    }
 
     openModal = () => {
         this.setState({ isModalOpen: true });
@@ -118,8 +106,9 @@ class StudentProfile extends Component {
                     onRequestClose={this.closeModal}
                     contentLabel="Change Password Modal"
                 >
+                
                     <h2>Change Password</h2>
-                    <form onSubmit={this.handleSubmit}>
+                    <form onSubmit={this.handleSubmit} className="change-password-form">
                         <input
                             type="password"
                             name="oldPassword"

@@ -48,3 +48,24 @@
 .Footer {
     /* Your custom styles for footer */
 }
+
+.change-password-form input {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    /* Adjust as needed for spacing */
+}
+
+.change-password-form button {
+    margin-top: 10px;
+    /* Adjust as needed for spacing */
+}
+
+.change-password-form input[type="password"] {
+    height: 45px;
+    /* or any other value you prefer */
+    padding: 10px;
+    /* Adjust padding to center the text vertically */
+    margin-bottom: 15px;
+    /* Adjust as needed for spacing between inputs */
+}

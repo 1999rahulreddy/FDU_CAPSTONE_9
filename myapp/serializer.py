@@ -119,10 +119,12 @@ class ProfessorSerializer(serializers.ModelSerializer):
 
 
 class CodeSerializer(serializers.ModelSerializer):
+    course_detail = CourseSerializer(source='course', read_only=True)
+
     class Meta:
         model = Code
         fields = ['id', 'student', 'course', 'assignment_no',
-                  'description', 'language', 'code_file', 'due_date']
+                  'description', 'language', 'code_file', 'due_date', 'course_detail']
 
 
 class MyAppCourseAssignmentSerializer(serializers.ModelSerializer):

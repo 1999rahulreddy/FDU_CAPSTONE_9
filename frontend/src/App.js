@@ -10,7 +10,14 @@ import GradePage from './views/GradePage/GradePage';
 import StudentProfile from './views/StudentProfile/StudentProfile';
 import PasswordPage from './views/PasswordPage/PasswordPage';
 import AllGradePage from './views/AllGradePage/AllGradePage';
+import TeacherDashBoard from './views/TeacherDashBoard/TeacherDashBoard';
+import TeacherProfile from './views/TeacherProfile/TeacherProfile';
+import Teacherevoluations from './views/Teacherevoluations/Teacherevoluations';
+import TeacherListallcodes from './views/TeacherListallcodes/TeacherListallcodes';
 import AssignmentPage from './views/AssignmentPage/AssignmentPage'; 
+import TeacherAssignmentPage from './views/TeacherAssignmentPage/TeacherAssignmentPage';
+import UploadTestCasePage from './views/UploadTestCasePage/UploadTestCasePage';
+
 
 
 
@@ -29,7 +36,13 @@ function App() {
           <Route path="/profile" component={StudentProfile} /> 
           <Route path="/change-password" component={PasswordPage} />
           <Route path="/all-grades/:studentId" component={AllGradePage} />
+          <Route path="/teacherdashboard" component={TeacherDashBoard} />
+          <Route path="/teacherprofile" component={TeacherProfile} />
+          <Route path="/Teacherevoluations" component={Teacherevoluations} />
+          <Route path="/TeacherListallcodes" component={TeacherListallcodes} />
           <Route path="/assignments/:courseId" component={AssignmentPage} /> 
+          <Route path="/teacher-assignments/:courseId" component={TeacherAssignmentPage} />
+          <Route path="/upload-test-case/:courseId/:assignmentId" component={UploadTestCasePage} />
         </Switch>
       </div>
     </Router>
