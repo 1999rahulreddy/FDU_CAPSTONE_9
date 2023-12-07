@@ -102,6 +102,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class StudentSerializer(serializers.ModelSerializer):
     courses = CourseSerializer(many=True, read_only=True)
+
     # student = UserSerializer(many=True, read_only=True)
 
     class Meta:
@@ -111,11 +112,22 @@ class StudentSerializer(serializers.ModelSerializer):
 
 class ProfessorSerializer(serializers.ModelSerializer):
     courses = CourseSerializer(many=True, read_only=True)
+
     # student = UserSerializer(many=True, read_only=True)
 
     class Meta:
         model = Professor
         fields = ['professor_id', 'professor_name', 'email', 'courses']
+
+
+class ProfessorRegisterSerializer(serializers.ModelSerializer):
+    courses = CourseSerializer(many=True, read_only=True)
+
+    # student = UserSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Professor
+        fields = ['professor_id', 'professor_name', 'courses', 'last_name',  'email', 'username', 'password', 'is_staff', "is_active"]
 
 
 class CodeSerializer(serializers.ModelSerializer):

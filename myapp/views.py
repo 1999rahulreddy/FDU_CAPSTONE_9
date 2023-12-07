@@ -227,7 +227,7 @@ class Assign_Test_Case(APIView):
 
 class ChangePasswordView(APIView):
     serializer_class = ChangePasswordSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(
@@ -416,7 +416,7 @@ def upload_file(request):
 
 class GradesView(APIView):
     serializer_class = GradesSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, student_id, course_id, format=None):
         try:
@@ -431,7 +431,7 @@ class GradesView(APIView):
 
 
 class AllGradesView(APIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, student_id, format=None):
         try:
@@ -456,7 +456,8 @@ class AllGradesView(APIView):
 
 class StudentCoursesView(APIView):
     serializer_class = StudentSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
+
     # permission_classes = (AllowAny,)
 
     def get(self, request, student_id, format=None):
@@ -481,7 +482,7 @@ class StudentCoursesView(APIView):
 
 class ProfessorCoursesView(APIView):
     serializer_class = ProfessorSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, professor_id, format=None):
         try:
@@ -607,7 +608,7 @@ def upload_testcase(request):
 
 class AssignmentsView(APIView):
     serializer_class = MyAppCourseAssignmentSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, course_id, format=None):
         try:
@@ -618,3 +619,13 @@ class AssignmentsView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@permission_classes([AllowAny])
+class RegisterProfessor(APIView):
+    def post(self, request):
+        serializer = ProfessorRegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

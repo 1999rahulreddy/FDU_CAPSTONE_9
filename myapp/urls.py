@@ -28,6 +28,7 @@ urlpatterns = [
     path('api/prof/get_course_list/<int:id>',views.get_course_list, name='api-course-list'),
     path('api/prof/get_pending_upload/<int:id>', views.get_pending_upload, name='api-pending-upload'),
     path('api/prof/upload_testcase/',views.upload_testcase, name='api-upload-testcase'),
+    path('api/prof/register-professor/', RegisterProfessor.as_view(), name='api-prof-register'),
     # path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
     path('api/assignments/<int:course_id>/',AssignmentsView.as_view(), name='assignments-list'),
 ]
