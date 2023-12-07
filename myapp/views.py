@@ -62,7 +62,7 @@ def logout_view(request):
 
 
 def home(request):
-    return render(request, 'public/index.html', {})
+    return render(request, 'home.html', {})
 
 
 def upload_script(request):
@@ -624,6 +624,7 @@ class AssignmentsView(APIView):
 @permission_classes([AllowAny])
 class RegisterProfessor(APIView):
     def post(self, request):
+
         serializer = ProfessorRegisterSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

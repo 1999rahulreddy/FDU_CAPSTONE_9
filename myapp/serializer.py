@@ -127,7 +127,14 @@ class ProfessorRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Professor
-        fields = ['professor_id', 'professor_name', 'courses', 'last_name',  'email', 'username', 'password', 'is_staff', "is_active"]
+        fields = ['professor_id', 'professor_name', 'courses', 'last_name', 'email', 'username', 'password', 'is_staff',
+                  'is_active']
+
+    def create(self, validated_data):
+        if 'is_staff' not in validated_data or validated_data['is_staff'] is None:
+            validated_data['is_staff'] = True  # Set is_staff to True if it is None
+
+        return super(ProfessorRegisterSerializer, self).create(validated_data)
 
 
 class CodeSerializer(serializers.ModelSerializer):
