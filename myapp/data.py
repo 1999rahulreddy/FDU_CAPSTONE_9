@@ -35,7 +35,8 @@ def data(uploaded_file, user, file_name, file_location, description, language, c
                 else:
                     results.append(f'Test case {idx + 1} Failed\n')
 
-            pass_count = results.count("Passed")
+            #pass_count = results.count("Passed")
+            pass_count = sum("Passed" in r for r in results)
             total_count = len(test_cases)
             score = (pass_count / total_count) * 100 if total_count > 0 else 0
 
@@ -74,7 +75,8 @@ def data(uploaded_file, user, file_name, file_location, description, language, c
                     except ValueError as e:
                         results.append(f'Test case {idx + 1} Failed: {str(e)}\n')
 
-                pass_count = results.count("Passed")
+                #pass_count = results.count("Passed")
+                pass_count = sum("Passed" in r for r in results)
                 total_count = len(test_cases)
                 score = (pass_count / total_count) * 100 if total_count > 0 else 0
 
