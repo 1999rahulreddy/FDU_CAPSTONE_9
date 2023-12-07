@@ -110,8 +110,7 @@ def upload_file(request, course_id, assignment_id):
         os.makedirs(course_folder, exist_ok=True)
 
         # Add the Assignment folder inside the Course's folder based on the Assignment_id
-        assignment_folder = os.path.join(
-            course_folder, f'assignment_{assignment_id}')
+        assignment_folder = os.path.join(course_folder, f'assignment_{assignment_id}')
         os.makedirs(assignment_folder, exist_ok=True)
 
         # Set the file location inside the course folder
@@ -120,13 +119,14 @@ def upload_file(request, course_id, assignment_id):
 
         if file_extension == '.py':
             # Handle Python script execution
-            result = data(uploaded_file, student_instance,
-                          uploaded_file.name, file_location, description, 'python')
+            result = data(uploaded_file, student_instance, uploaded_file.name, file_location, description, 'python', course_id, assignment_id)
+
+            #print("\n\n\n"+ course_id + "  " + assignment_id)
+            #print(f'\n\n\n\n{course_id} {assignment_id} \n\n\n')
 
         elif file_extension == '.c':
             # Handle C code compilation and execution
-            result = data(uploaded_file, student_instance,
-                          uploaded_file.name, file_location, description, 'c')
+            result = data(uploaded_file, student_instance, uploaded_file.name, file_location, description, 'c', course_id, assignment_id)
 
             if 'error' in result:
                 return Response({'error': result['error']}, status=status.HTTP_400_BAD_REQUEST)
@@ -410,7 +410,6 @@ def upload_file(request):
     return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 '''
 
-
 class GradesView(APIView):
     serializer_class = GradesSerializer
     permission_classes = (IsAuthenticated, )
@@ -587,6 +586,8 @@ def upload_testcase(request):
     input_output_pairs = request.data.get('input_output_pairs', [])
 
     test_cases = []
+
+    print(input_output_pairs)
     for pair in input_output_pairs:
         test_case_data = {
             'professor_id': prof_id,
@@ -603,8 +604,8 @@ def upload_testcase(request):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    
     return Response(test_cases, status=status.HTTP_201_CREATED)
-
 
 class AssignmentsView(APIView):
     serializer_class = MyAppCourseAssignmentSerializer
