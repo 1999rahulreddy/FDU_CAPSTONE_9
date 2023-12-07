@@ -104,7 +104,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'myapp',        # Database name
         'USER': 'root',    # Database user
-        'PASSWORD': '12345678',  # Database password #used by peng
+        'PASSWORD': '123456',  # Database password #used by peng
         # 'PASSWORD': 'Qwerty@12',  # Database password
         'HOST': 'localhost',       # Database host
         'PORT': '3306',            # Database port (change as needed)

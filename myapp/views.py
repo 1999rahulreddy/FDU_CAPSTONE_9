@@ -540,7 +540,7 @@ def get_prof_overview(request):
 @permission_classes([AllowAny])
 def get_prof_profile(request, id):
     try:
-        profile = Professor.objects.get(id=id)
+        profile = Professor.objects.get(professor_id=id)
         serializer = ProfessorSerializer(profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Professor.DoesNotExist:

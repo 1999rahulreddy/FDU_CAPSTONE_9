@@ -9,8 +9,7 @@ urlpatterns = [
     # path('signup', views.SignUpView.as_view(), name='signup'),
     # path('signup/', views.SignUpView, name='signup'),
 
-
-    path('', views.home, name='home',),
+    path('', views.home, name='home', ),
     # path('upload', views.upload_file, name='upload'),
     # path('upload/', views.upload_script, name='upload-script'),
     # path('', views.home, name='home',),
@@ -39,14 +38,14 @@ urlpatterns = [
          ProfessorCoursesView.as_view(), name='course_professors'),
 
     path('api/prof/overview/', views.get_prof_overview, name='api-prof-overview'),
-    path('api/prof/profile/<int:id>',
-         views.get_prof_profile, name='api-prof-profile'),
-    path('api/prof/get_course_list/<int:id>',
-         views.get_course_list, name='api-course-list'),
-    path('api/prof/get_pending_upload/<int:id>',
-         views.get_pending_upload, name='api-pending-upload'),
-    path('api/prof/upload_testcase/',
-         views.upload_testcase, name='api-upload-testcase'),
+
+    path('api/prof/profile/<int:id>',views.get_prof_profile, name='api-prof-profile'),
+
+    path('api/prof/get_course_list/<int:id>',views.get_course_list, name='api-course-list'),
+
+    path('api/prof/get_pending_upload/<int:id>',views.get_pending_upload, name='api-pending-upload'),
+
+    path('api/prof/upload_testcase/',views.upload_testcase, name='api-upload-testcase'),
     # path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
     path('api/assignments/<int:course_id>/',
          AssignmentsView.as_view(), name='assignments-list'),

@@ -115,7 +115,7 @@ class ProfessorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Professor
-        fields = ['professor_id', 'professor_name', 'courses']
+        fields = ['professor_id', 'professor_name', 'email', 'courses']
 
 
 class CodeSerializer(serializers.ModelSerializer):
