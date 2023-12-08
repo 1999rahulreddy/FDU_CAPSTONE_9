@@ -131,10 +131,10 @@ def upload_file(request, course_id, assignment_id):
             # print("\n\n\n"+ course_id + "  " + assignment_id)
             # print(f'\n\n\n\n{course_id} {assignment_id} \n\n\n')
 
-        elif file_extension == '.c':
+        elif file_extension == '.c' or file_extension == '.cpp':
             # Handle C code compilation and execution
             result = data(uploaded_file, student_instance, uploaded_file.name,
-                          file_location, description, 'c', course_id, assignment_id)
+                          file_location, description, file_extension[1:], course_id, assignment_id)
 
             if 'error' in result:
                 return Response({'error': result['error']}, status=status.HTTP_400_BAD_REQUEST)

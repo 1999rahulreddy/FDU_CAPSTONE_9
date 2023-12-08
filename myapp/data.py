@@ -18,7 +18,7 @@ def data(uploaded_file, user, file_name, file_location, description, language, c
         test_cases_query = TestCase.objects.filter(course_id=course_id, assignment_no=assignment_id)
         test_cases = [case.input_data.split() for case in test_cases_query]
         expected_output = [case.output_data for case in test_cases_query]
-        print(expected_output)
+        #print(expected_output)
 
         if language == 'python':
             results = []
@@ -35,6 +35,7 @@ def data(uploaded_file, user, file_name, file_location, description, language, c
                 else:
                     results.append(f'Test case {idx + 1} Failed\n')
 
+            print(results)
             #pass_count = results.count("Passed")
             pass_count = sum("Passed" in r for r in results)
             total_count = len(test_cases)
@@ -50,7 +51,7 @@ def data(uploaded_file, user, file_name, file_location, description, language, c
                 "score": score
             }
 
-        elif language == 'c':
+        elif language == 'c' or language == 'cpp':
             # Compile the C code (assuming it's a single .c file)
             compile_command = ['gcc', file_location, '-o', f'{file_location}_compiled_file']
             compile_result = subprocess.run(compile_command, capture_output=True, text=True)
@@ -65,16 +66,18 @@ def data(uploaded_file, user, file_name, file_location, description, language, c
                     execution_result = subprocess.run(execute_command + [str(arg) for arg in case], stdout=subprocess.PIPE, text=True)
                     output = execution_result.stdout.strip()
                     ou.append(output)
+                    #print(ou)
 
                     # Check if the output matches the expected output
                     try:
-                        if int(output) == expected_output[idx]:
+                        if output == expected_output[idx]:
                             results.append(f'Test case {idx + 1} Passed\n')
                         else:
                             results.append(f'Test case {idx + 1} Failed\n')
                     except ValueError as e:
                         results.append(f'Test case {idx + 1} Failed: {str(e)}\n')
 
+                print(results)
                 #pass_count = results.count("Passed")
                 pass_count = sum("Passed" in r for r in results)
                 total_count = len(test_cases)
@@ -100,7 +103,7 @@ def data(uploaded_file, user, file_name, file_location, description, language, c
         else:
             result = {'error': 'Invalid language'}
 
-        print(result)
+        #print(result)
         return result
 
     except TestCase.DoesNotExist:
