@@ -272,7 +272,6 @@ class LoginAPIView(APIView):
 
 logger = logging.getLogger(__name__)
 
-
 # class LoginAPIView(APIView):
 #     serializer_class = LoginSerializer
 #     permission_classes = (AllowAny,)
@@ -347,6 +346,7 @@ class LoginAPIView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 '''
 
+
 class LoginAPIView(APIView):
     serializer_class = LoginSerializer
     permission_classes = (AllowAny,)
@@ -386,6 +386,7 @@ class LoginAPIView(APIView):
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 '''
 @api_view(['POST'])
@@ -561,8 +562,16 @@ def data(uploaded_file, user, file_name, file_location, description, language):
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
-def get_prof_overview(request):
-    return Response()
+def get_prof_overview(request, id):
+    try:
+        profile = Professor.objects.get(professor_id=id)
+        # Create a dictionary with just the professor's name
+        data = {
+            'professor_name': profile.professor_name
+        }
+        return Response(data, status=status.HTTP_200_OK)
+    except Professor.DoesNotExist:
+        return ProfessorSerializer({'error': 'Professor not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
@@ -649,7 +658,6 @@ class AssignmentsView(APIView):
 @permission_classes([AllowAny])
 class RegisterProfessor(APIView):
     def post(self, request):
-
         serializer = ProfessorRegisterSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

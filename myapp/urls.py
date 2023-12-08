@@ -23,7 +23,7 @@ urlpatterns = [
 
     path('api/Professor_course_list/<int:professor_id>/',ProfessorCoursesView.as_view(), name='course_professors'),
 
-    path('api/prof/overview/', views.get_prof_overview, name='api-prof-overview'),
+    path('api/prof/overview/<int:id>', views.get_prof_overview, name='api-prof-overview'),
     path('api/prof/profile/<int:id>',views.get_prof_profile, name='api-prof-profile'),
     path('api/prof/get_course_list/<int:id>',views.get_course_list, name='api-course-list'),
     path('api/prof/get_pending_upload/<int:id>', views.get_pending_upload, name='api-pending-upload'),
