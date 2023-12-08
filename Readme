@@ -1,1 +1,163 @@
-installed Django
+# Code Submission and Evaluation Platform
+
+## Setup
+
+The first thing to do is to clone the repository:
+
+```sh
+$ git clone https://github.com/1999rahulreddy/FDU_CAPSTONE_9.git
+$ cd sample-django-app
+```
+
+Create a virtual environment to install dependencies in and activate it:
+
+```sh
+$ virtualenv2 --no-site-packages env
+$ source env/bin/activate
+```
+
+Then install the dependencies:
+
+```sh
+(env)$ pip install -r requirements.txt
+```
+Note the `(env)` in front of the prompt. This indicates that this terminal
+session operates in a virtual environment set up by `virtualenv2`.
+
+Before starting the server connect the database under `project_folder/settings.py` as shown below:
+```sh
+DATABASES = 
+{
+    'default': 
+        {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'myapp',        # Database name
+            'USER': 'root',         # Database user
+            'PASSWORD': '123456',   # Database password
+            'HOST': 'localhost',    # Database host
+            'PORT': '3306',         # Database port (change as needed)
+        }
+}
+```
+
+Once the database is connected successfully run the below commands to update all the tables in the databse:
+```sh
+Run `python manage.py makemigrations`
+Run `python manage.py migrate`.
+```
+
+Once `pip` has finished downloading the dependencies:
+```sh
+(env)$ cd project
+(env)$ python manage.py runserver
+```
+Once the server starts running:
+```sh
+1.  Navigate the current working directory to: (env)$ cd frontend.
+2.  Install the all frontend dependencies using npm: (env)npm install.
+3.  Run the server: (env)npm start.
+```
+
+And navigate to `http://localhost:3000/`.
+
+
+
+## Features Catalogue
+
+### Frontend
+
+-   `react` for building interactive UIs
+-   `react-dom` for rendering the UI
+-   `react-router` for page navigation
+-   `webpack` for bundling static assets
+-   `webpack-bundle-tracker` for providing the bundled assets to Django
+-   Styling
+    -   `bootstrap` for providing responsive stylesheets
+    -   `react-bootstrap` for providing components built on top of Bootstrap CSS without using plugins
+    -   `sass` for providing compatibility with SCSS files
+-   State management and backend integration
+    -   `axios` for performing asynchronous calls
+    -   `cookie` for easy integration with Django using the `csrftoken` cookie
+    -   `@reduxjs/toolkit` for easy state management across the application with the whole toolkit including devtools for inspecting and debugging Redux via browser and ability to run thunks for interacting with the Redux store through asynchronous logic
+    -   `connected-react-router` for integrating Redux with React Router
+    -   `history` for providing browser history to Connected React Router
+    -   `react-redux` for integrating React with Redux
+
+### Backend
+
+-   `django` for building backend logic using Python
+-   `djangorestframework` for building a REST API on top of Django
+
+
+
+
+## Walkthrough
+
+Once this `http://localhost:3000/` opens up in the browser you will be automatically taken to a Login/Signup page once there start with the registration as you wont be having any details in your database. Please do not we have 2 seperate registration pages one for `STUDENT` another for `PROFESSOR`.
+
+- STUDENT REGISTRATION PAGE - `http://localhost:3000/signup`
+- TEACHER REGISTRATION PAGE - `http://localhost:3000/teacher-registration`
+
+Use the URL's accordingly.
+
+## Login/Signup
+
+#### Student Signup
+    Need to pass student usernmae, password , confirm password. to create a new student.
+#### Student Login
+    Need to use the previous username and password to login as a student and also once logged in     
+    you will be getting a Token that is going to be used a Authentication for all the student pages.
+    
+#### Professor Signup
+    Need to pass professor name, usernmae, password , confirm password. to create a new professor.
+    Here the attribute "is_staff" is set to TRUE by default.
+
+#### Professor Login
+    Need to use the previous username and password to login as a professor and also once logged in     
+    you will be getting a Token that is going to be used a Authentication for all the professor pages.
+
+## Upload Test case
+
+Use - http://localhost:3000/upload-test-case/:courseId/:assignmentId
+
+[Upload Test Case](http://localhost:3000/upload-test-case/:courseId/:assignmentId)
+
+this is accesible to professor such that he is able to add testcase to database.
+
+provide the professor_id, course id, assignment id, input, output 
+
+## Code submission
+
+Use - http://localhost:3000/upload/:courseId/:assignmentId
+
+[Upload](http://localhost:3000/upload/:courseId/:assignmentId)
+
+This is accesible by Students such that he is able to upload the code as per the professors request.
+
+here all that the student needs to pass is just the file that he/she wants to upload. as fields like assignment id, course id, student id are all handeled through the backend.
+
+As soon as the student uploads the code the grades are evaluated and displayed to student right then and there.
+
+## Grade Evalucation for Submitted Code
+
+Use - http://localhost:3000/grade-page/:studentId/:courseId
+
+[Grade](http://localhost:3000/grade-page/:studentId/:courseId)
+
+This is accessible to student to view their grades for the assignment they have submitted using the [Upload](http://localhost:3000/upload/:courseId/:assignmentId) view.
+
+The same is present for the proffessor pages as well but that is used for the professor to get a 
+view of what the student uploaded and for which course and which assignment specifically.
+
+For professor
+Use - http://localhost:3000/Teacherevoluations/
+
+[Teacher View Grade](http://localhost:3000/Teacherevoluations/)
+
+
+## Tests
+
+To run the tests, `cd` into the directory where `manage.py` is:
+```sh
+(env)$ python manage.py test myapp
+``` 

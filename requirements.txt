@@ -1,0 +1,38 @@
+# Django and Core Dependencies
+Django==3.2.9
+django-cors-headers==3.10
+
+# Database and ORM
+psycopg2-binary==2.9.1
+
+# Django REST Framework
+djangorestframework==3.12.4
+
+# Authentication (Optional)
+django-allauth==0.46.0
+
+# Frontend (React) Dependencies
+# You may want to run `npx create-react-app my-react-app` separately for React setup.
+
+# React and React Router
+react==17.0.2
+react-dom==17.0.2
+react-router-dom==5.3.0
+
+# State Management (Optional)
+redux==4.1.2
+react-redux==7.2.6
+
+# HTTP Requests
+axios==0.21.1
+
+# Styling (Optional)
+styled-components==5.3.3
+
+# Linting and Code Formatting (Optional)
+eslint==7.32.0
+prettier==2.4.1
+
+# Testing (Optional)
+jest==27.0.6
+react-testing-library==12.0.0
