@@ -93,6 +93,73 @@ def upload_file(request, course_id, assignment_id):
         user = request.user
         student_instance = get_object_or_404(Student, username=user)
         student_name = student_instance.student_name
+        student_id = student_instance.student_id
+        uploaded_file = request.FILES.get('file')
+        description = request.POST.get('description', '')
+
+        if not uploaded_file:
+            return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
+
+        BASE_DIR = Path(__file__).resolve().parent
+        #student_folder = os.path.join(BASE_DIR, f'uploadedcode/{student_name}')
+
+        # Create the student's folder if it doesn't exist
+        #os.makedirs(student_folder, exist_ok=True)
+
+        # Add the course folder inside the student's folder based on the course_id
+        course_folder = os.path.join(BASE_DIR, f'uploadedcode/course_{course_id}')
+        os.makedirs(course_folder, exist_ok=True)
+
+        # Add the Assignment folder inside the Course's folder based on the Assignment_id
+        assignment_folder = os.path.join(
+            course_folder, f'assignment_{assignment_id}')
+        
+        os.makedirs(assignment_folder, exist_ok=True)
+
+        student_folder = os.path.join(assignment_folder, f'student_{student_id}_{student_name}')
+        os.makedirs(student_folder, exist_ok=True)
+
+        # Set the file location inside the course folder
+        file_location = os.path.join(student_folder, uploaded_file.name)
+        file_extension = os.path.splitext(file_location)[-1].lower()
+
+        if file_extension == '.py':
+            # Handle Python script execution
+            result = data(uploaded_file, student_instance, uploaded_file.name,
+                          file_location, description, 'python', course_id, assignment_id)
+
+            # print("\n\n\n"+ course_id + "  " + assignment_id)
+            # print(f'\n\n\n\n{course_id} {assignment_id} \n\n\n')
+
+        elif file_extension == '.c':
+            # Handle C code compilation and execution
+            result = data(uploaded_file, student_instance, uploaded_file.name,
+                          file_location, description, 'c', course_id, assignment_id)
+
+            if 'error' in result:
+                return Response({'error': result['error']}, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            return Response({'error': 'Invalid file type'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Save the uploaded file to the specified location
+        with open(file_location, 'wb+') as file:
+            for chunk in uploaded_file.chunks():
+                file.write(chunk)
+
+        return Response(result, status=status.HTTP_200_OK)
+
+    return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+'''
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upload_file(request, course_id, assignment_id):
+    if request.method == 'POST':
+        user = request.user
+        student_instance = get_object_or_404(Student, username=user)
+        student_name = student_instance.student_name
         uploaded_file = request.FILES.get('file')
         description = request.POST.get('description', '')
 
@@ -112,6 +179,7 @@ def upload_file(request, course_id, assignment_id):
         # Add the Assignment folder inside the Course's folder based on the Assignment_id
         assignment_folder = os.path.join(
             course_folder, f'assignment_{assignment_id}')
+        
         os.makedirs(assignment_folder, exist_ok=True)
 
         # Set the file location inside the course folder
@@ -146,7 +214,7 @@ def upload_file(request, course_id, assignment_id):
 
     return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-
+'''
 @login_required
 def list_files(request):
     user_files = user_files.objects.filter(user=request.user)
@@ -272,6 +340,7 @@ class LoginAPIView(APIView):
 
 logger = logging.getLogger(__name__)
 
+
 # class LoginAPIView(APIView):
 #     serializer_class = LoginSerializer
 #     permission_classes = (AllowAny,)
@@ -312,6 +381,7 @@ logger = logging.getLogger(__name__)
 #             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 '''
 class LoginAPIView(APIView):
     serializer_class = LoginSerializer
@@ -345,7 +415,6 @@ class LoginAPIView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 '''
-
 
 class LoginAPIView(APIView):
     serializer_class = LoginSerializer
@@ -386,7 +455,6 @@ class LoginAPIView(APIView):
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 '''
 @api_view(['POST'])
@@ -562,16 +630,8 @@ def data(uploaded_file, user, file_name, file_location, description, language):
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
-def get_prof_overview(request, id):
-    try:
-        profile = Professor.objects.get(professor_id=id)
-        # Create a dictionary with just the professor's name
-        data = {
-            'professor_name': profile.professor_name
-        }
-        return Response(data, status=status.HTTP_200_OK)
-    except Professor.DoesNotExist:
-        return ProfessorSerializer({'error': 'Professor not found'}, status=status.HTTP_404_NOT_FOUND)
+def get_prof_overview(request):
+    return Response()
 
 
 @api_view(['GET'])
@@ -655,11 +715,20 @@ class AssignmentsView(APIView):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+
 @permission_classes([AllowAny])
 class RegisterProfessor(APIView):
     def post(self, request):
+
         serializer = ProfessorRegisterSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+'''
+class RegisterProfessor(generics.CreateAPIView):
+    # queryset = User.objects.all()
+    queryset = Professor.objects.all()
+    permission_classes = [permissions.AllowAny]
+    serializer_class = RegistrationSerializer
+'''
