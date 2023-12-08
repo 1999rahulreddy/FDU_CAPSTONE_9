@@ -312,6 +312,8 @@ logger = logging.getLogger(__name__)
 #         else:
 #             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+'''
 class LoginAPIView(APIView):
     serializer_class = LoginSerializer
     permission_classes = (AllowAny,)
@@ -343,24 +345,47 @@ class LoginAPIView(APIView):
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+'''
 
+class LoginAPIView(APIView):
+    serializer_class = LoginSerializer
+    permission_classes = (AllowAny,)
 
-# class LoginAPIView(APIView):
-#     serializer_class = LoginSerializer
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            username = serializer.validated_data['username']
+            password = serializer.validated_data['password']
 
-#     def post(self, request, *args, **kwargs):
-#         serializer = self.serializer_class(data=request.data)
-#         if serializer.is_valid():
-#             username = serializer.validated_data['username']
-#             password = serializer.validated_data['password']
-#             user = authenticate(request, username=username, password=password)
-#             if user is not None:
-#                 login(request, user)
-#                 return Response({'status': 'login successful'}, status=status.HTTP_200_OK)
-#             else:
-#                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-#         else:
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            user = authenticate(request, username=username, password=password)
+
+            if user is not None:
+                login(request, user)
+
+                # Get or create a token for the user
+                token, _ = Token.objects.get_or_create(user=user)
+
+                # Determine if the user is a Professor or Student
+                is_staff = user.is_staff
+                user_model = Professor if is_staff else Student
+
+                # Fetch the student or professor ID
+                try:
+                    user_profile = user_model.objects.get(user_ptr=user)
+                    user_id = user_profile.professor_id if is_staff else user_profile.student_id
+                except user_model.DoesNotExist:
+                    user_id = None
+
+                # Return the token, user ID, and is_staff in the response
+                return Response({
+                    'token': token.key,
+                    'user_id': user_id,
+                    'is_staff': is_staff,
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 '''
 @api_view(['POST'])

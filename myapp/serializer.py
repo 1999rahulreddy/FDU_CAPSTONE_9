@@ -119,7 +119,7 @@ class ProfessorSerializer(serializers.ModelSerializer):
         model = Professor
         fields = ['professor_id', 'professor_name', 'email', 'courses']
 
-
+'''
 class ProfessorRegisterSerializer(serializers.ModelSerializer):
     courses = CourseSerializer(many=True, read_only=True)
 
@@ -135,6 +135,39 @@ class ProfessorRegisterSerializer(serializers.ModelSerializer):
             validated_data['is_staff'] = True  # Set is_staff to True if it is None
 
         return super(ProfessorRegisterSerializer, self).create(validated_data)
+'''
+    
+class ProfessorRegisterSerializer(serializers.ModelSerializer):
+    #courses = CourseSerializer(many=True, read_only=True)
+    password2 = serializers.CharField(
+        style={'input_type': 'password'}, write_only=True)
+
+    class Meta:
+        model = Professor
+        fields = ['username', 'password', 'password2', 'is_staff']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
+
+    def create(self, validated_data):
+        if 'is_staff' not in validated_data or validated_data['is_staff'] is None:
+            validated_data['is_staff'] = True  # Set is_staff to True if it is None
+
+        password = validated_data['password']
+        password2 = validated_data['password2']
+        username = validated_data['username']
+
+        if password != password2:
+            raise serializers.ValidationError({'password': 'Password fields must match.'})
+
+        user = Professor(
+            username=username,
+            is_staff=True,
+        )
+        user.set_password(password)
+        user.save()
+
+        return user
 
 
 class CodeSerializer(serializers.ModelSerializer):
